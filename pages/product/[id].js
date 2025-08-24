@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import Header from '../../../components/Header';
-import { useAuth } from '../../../components/AuthProvider';
-import { useToast } from '../../../components/ToastProvider';
+import Header from '../../components/Header';
+import { useAuth } from '../../components/AuthProvider';
+import { useToast } from '../../components/ToastProvider';
 import { useState, useMemo } from 'react';
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
