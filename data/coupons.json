@@ -1,0 +1,20 @@
+[
+  {
+    "code": "WELCOME10",
+    "type": "percent",
+    "value": 10,
+    "expires": "2026-01-01T00:00:00.000Z",
+    "maxUses": 10000,
+    "used": 4,
+    "minCartValue": 0
+  },
+  {
+    "code": "FLAT100",
+    "type": "flat",
+    "value": 100,
+    "expires": "2026-12-31T00:00:00.000Z",
+    "maxUses": 1000,
+    "used": 0,
+    "minCartValue": 500
+  }
+]

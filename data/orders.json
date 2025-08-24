@@ -1,0 +1,192 @@
+[
+  {
+    "id": "mek1fqcyktnkvd",
+    "createdAt": "2025-08-20T13:58:19.954Z",
+    "userId": "1755673416740",
+    "shipping": {
+      "name": "siddhant",
+      "phone": "98765678876",
+      "address": "njhgfcghjjhgvbn"
+    },
+    "paymentMethod": "COD",
+    "coupon": {
+      "code": "WELCOME10",
+      "discount": 1039
+    },
+    "items": [
+      {
+        "productId": "3",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 2,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      },
+      {
+        "productId": "1755681957545",
+        "title": "Hair Shampoo",
+        "price": 199,
+        "qty": 2,
+        "image": "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        "productId": "4",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 2,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      }
+    ],
+    "subtotal": 10394,
+    "discount": 1039,
+    "total": 9355,
+    "status": "placed"
+  },
+  {
+    "id": "mejsv75z6ni6za",
+    "createdAt": "2025-08-20T09:58:25.031Z",
+    "userId": "1755673416740",
+    "shipping": {
+      "name": "SIDDHANT",
+      "phone": "8888889999",
+      "address": "noida"
+    },
+    "paymentMethod": "UPI",
+    "coupon": {
+      "code": "WELCOME10",
+      "discount": 20
+    },
+    "items": [
+      {
+        "productId": "1755681957545",
+        "title": "Hair Shampoo",
+        "price": 199,
+        "qty": 1,
+        "image": "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      }
+    ],
+    "subtotal": 199,
+    "discount": 20,
+    "total": 179,
+    "status": "placed"
+  },
+  {
+    "id": "mejssxzr74a7yd",
+    "createdAt": "2025-08-20T09:56:39.831Z",
+    "userId": "1755673416740",
+    "shipping": {
+      "name": "futec noida",
+      "phone": "9999999999",
+      "address": "noida"
+    },
+    "paymentMethod": "COD",
+    "coupon": {
+      "code": "WELCOME10",
+      "discount": 250
+    },
+    "items": [
+      {
+        "productId": "3",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 1,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      }
+    ],
+    "subtotal": 2499,
+    "discount": 250,
+    "total": 2249,
+    "status": "placed"
+  },
+  {
+    "id": "mejsfvhyyy42ln",
+    "createdAt": "2025-08-20T09:46:30.070Z",
+    "userId": null,
+    "shipping": {
+      "name": "hjn",
+      "phone": "hbjn",
+      "address": "hbjn"
+    },
+    "paymentMethod": "COD",
+    "coupon": null,
+    "items": [
+      {
+        "productId": "4",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 1,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      }
+    ],
+    "subtotal": 2499,
+    "discount": 0,
+    "total": 2499,
+    "status": "placed"
+  },
+  {
+    "id": "mejsd6eackb6m6",
+    "createdAt": "2025-08-20T09:44:24.226Z",
+    "userId": null,
+    "shipping": {
+      "name": "siddhant",
+      "phone": "9876543245",
+      "address": "hbj"
+    },
+    "paymentMethod": "COD",
+    "coupon": null,
+    "items": [
+      {
+        "productId": "4",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 1,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      },
+      {
+        "productId": "3",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 1,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      }
+    ],
+    "subtotal": 4998,
+    "discount": 0,
+    "total": 4998,
+    "status": "placed"
+  },
+  {
+    "id": "mejs4l7xi07q2j",
+    "createdAt": "2025-08-20T09:37:43.533Z",
+    "userId": "1755673416740",
+    "shipping": {
+      "name": "siddhant",
+      "phone": "9876543210",
+      "address": "demo address"
+    },
+    "paymentMethod": "COD",
+    "coupon": {
+      "code": "WELCOME10",
+      "discount": 750
+    },
+    "items": [
+      {
+        "productId": "3",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 2,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      },
+      {
+        "productId": "4",
+        "title": "Running Shoes",
+        "price": 2499,
+        "qty": 1,
+        "image": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/1.webp"
+      }
+    ],
+    "subtotal": 7497,
+    "discount": 750,
+    "total": 6747,
+    "status": "placed"
+  }
+]

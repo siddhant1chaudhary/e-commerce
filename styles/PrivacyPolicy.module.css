@@ -1,0 +1,21 @@
+.privacyContainer {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.privacyText {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.privacyList {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.privacyList li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}

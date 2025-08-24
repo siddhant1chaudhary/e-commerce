@@ -1,0 +1,24 @@
+.contactUsContainer {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contactForm {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contactForm .form-control {
+  border-radius: 4px;
+}
+
+.contactForm .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 1rem;
+}

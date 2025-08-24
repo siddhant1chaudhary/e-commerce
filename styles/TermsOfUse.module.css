@@ -1,0 +1,21 @@
+.termsContainer {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.termsText {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.termsList {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.termsList li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}

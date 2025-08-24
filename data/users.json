@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1755760845397",
+    "name": "john",
+    "email": "john@gmail.com",
+    "password": "$2a$10$lKE1G/YwKkI.rYVQHAB0ReJjI3kBEEH4XDefuwM4A5DcvSOlyZrZm",
+    "role": "user"
+  },
+  {
+    "id": "1755757406191",
+    "name": "sid",
+    "email": "sid@gmail.com",
+    "password": "$2a$10$pVjTf41WGMDu8GWukZKlz.5IzmgD.DMTyeRI4P.2sRfbcfmvqIGo6",
+    "role": "user"
+  },
+  {
+    "id": "1755753591674",
+    "name": "sid",
+    "email": "Sid@gmail.com",
+    "password": "$2a$10$Zb/4s9STb40DiUAvYnmncOh0cmM51XUXIHUbgE8TmQk31WeF9sGiu",
+    "role": "user"
+  },
+  {
+    "id": "1755698517164",
+    "name": "sadhvi",
+    "email": "sadhvi@gmail.com",
+    "password": "$2a$10$sSddNzRNT1tz6XxY6myxgOwdgV1W8LfJXk9b1mwc2YZ5Umzl8mIkO",
+    "role": "user"
+  },
+  {
+    "id": "1755673416740",
+    "name": "siddhant",
+    "email": "siddhant@gmail.com",
+    "password": "$2a$10$9V5afqt1TBdMrB7s5IQT6.X0jOpuMjj.6QufCI44HWdhd7glxjiwa",
+    "role": "user"
+  },
+  {
+    "id": "100",
+    "name": "Admin",
+    "email": "admin@demo.com",
+    "password": "$2a$10$FzHltCLE5JSH1THIg2tXbeKHkYZ8NhtJiLH0pKuhfWjboY96hYaU2",
+    "role": "admin"
+  }
+]
