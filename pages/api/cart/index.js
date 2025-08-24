@@ -1,16 +1,18 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { collectionFor } from '../../../lib/store';
 import { parseCookies, verifyToken } from '../../../lib/auth';
 import crypto from 'crypto';
 
-const dataPath = path.join(process.cwd(), 'data', 'carts.json');
-
 async function readCarts() {
-  const raw = await fs.readFile(dataPath, 'utf-8').catch(() => '[]');
-  try { return JSON.parse(raw); } catch (e) { return []; }
+  const col = await collectionFor('carts');
+  return await col.find({}).toArray();
 }
+
 async function writeCarts(carts) {
-  await fs.writeFile(dataPath, JSON.stringify(carts, null, 2));
+  const col = await collectionFor('carts');
+  await col.deleteMany({});
+  if (Array.isArray(carts) && carts.length) {
+    await col.insertMany(carts);
+  }
 }
 
 function genId() {
