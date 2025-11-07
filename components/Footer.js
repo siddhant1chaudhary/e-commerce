@@ -86,7 +86,7 @@ export default function Footer() {
 
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center small text-muted">
           <div>© {new Date().getFullYear()} TimTom. All rights reserved.</div>
-          <div>Made with ♥ — Demo project</div>
+          <div>Made with ♥ — TimTom</div>
         </div>
       </div>
     </footer>
