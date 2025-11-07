@@ -14,14 +14,14 @@ export default function Home() {
         <HomeCategories />
         <FeaturedProducts title="Trending styles" />
         <FeaturedProducts title="Best Sellers" />
-        <section className="mb-5">
+        {/* <section className="mb-5">
           <h5 className="mb-3">Popular Brands</h5>
           <div className="d-flex gap-3 overflow-auto py-2">
             {['Nike','Adidas','Puma','Levis','Zara','H&M'].map(b => (
               <div key={b} className="brand-pill d-flex align-items-center justify-content-center px-3 py-2 bg-white border rounded">{b}</div>
             ))}
           </div>
-        </section>
+        </section> */}
       </main>
     </div>
   );

@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from './AuthProvider';
 import Breadcrumbs from './Breadcrumbs';
 import Image from 'next/image';
-import logo from '../utils/images/logo.jpg'; // Adjust the path as necessary
+import logo from '../utils/images/logo.png'; // Adjust the path as necessary
 import styles from '../styles/Header.module.css';
 
 export default function Header() {
@@ -18,7 +18,7 @@ export default function Header() {
             <a className="navbar-brand d-flex align-items-center">
               {/* simple text logo; replace with image if available */}
               <Image src={logo} alt="Logo" style={{ height: 38, marginRight: 10,width:38,borderRadius:'50px' }} onError={(e)=>{e.currentTarget.style.display='none'}} />
-              E-Shop
+              Timtom
             </a>
           </Link>
 

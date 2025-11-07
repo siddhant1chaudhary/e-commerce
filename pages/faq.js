@@ -9,8 +9,8 @@ export default function FAQ() {
       <div className={`container ${styles.faqContainer}`}>
         <h1 className="text-center my-4">Frequently Asked Questions</h1>
         <div className={styles.faqItem}>
-          <h5>What is DemoShop?</h5>
-          <p>DemoShop is an online shopping platform offering a wide range of products.</p>
+          <h5>What is TimTom?</h5>
+          <p>TimTom is an online shopping platform offering a wide range of products.</p>
         </div>
         <div className={styles.faqItem}>
           <h5>How can I track my order?</h5>
