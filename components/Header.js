@@ -18,7 +18,7 @@ export default function Header() {
             <a className="navbar-brand d-flex align-items-center">
               {/* simple text logo; replace with image if available */}
               <Image src={logo} alt="Logo" style={{ height: 38, marginRight: 10,width:38,borderRadius:'50px' }} onError={(e)=>{e.currentTarget.style.display='none'}} />
-              Timtom
+              <h3><span style={{color:"#7dc4c3"}}>Tim</span><span style={{color:"#ef806f"}}>tom</span></h3>
             </a>
           </Link>
 
