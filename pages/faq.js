@@ -18,10 +18,9 @@ export default function FAQ() {
         </div>
         <div className={styles.faqItem}>
           <h5>What is the return policy?</h5>
-          <p>Returns are accepted within 14 days of receiving your order.</p>
+          <p>Returns are accepted within 7 days of receiving your order.</p>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

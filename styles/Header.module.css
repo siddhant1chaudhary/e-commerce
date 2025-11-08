@@ -1,4 +1,8 @@
 .header {
+  /* theme colors */
+  --accent: #ef806f;
+  --primary: #7dc4c3;
+  /* keep existing header styles if any */
   background-color: #f8f9fa;
   padding: 10px 20px;
   border-bottom: 1px solid #ddd;
@@ -56,4 +60,54 @@
   border: none;
   color: #d9534f;
   cursor: pointer;
+}
+
+/* brand */
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+.brandTim {
+	color: var(--primary);
+}
+.brandTom {
+	color: var(--accent);
+}
+
+/* cart */
+.cartText {
+	color: var(--accent);
+}
+.cartSvg {
+	stroke: var(--primary);
+	fill: none;
+}
+
+/* override Bootstrap buttons inside header scope */
+.header :global(.btn-primary) {
+	background-color: var(--accent) !important;
+	border-color: var(--accent) !important;
+}
+.header :global(.btn-primary):hover,
+.header :global(.btn-primary):focus {
+	opacity: 0.95;
+}
+
+.header :global(.btn-outline-secondary) {
+	color: var(--primary) !important;
+	border-color: var(--primary) !important;
+}
+.header :global(.btn-outline-secondary):hover {
+	background-color: rgba(125, 196, 195, 0.06);
+}
+
+/* ensure dropdown caret / nav links respect theme if needed */
+.header :global(.nav-link) {
+	color: inherit;
+}
+
+/* small adjustments for badges */
+.header :global(.badge.bg-danger) {
+	background-color: #d9534f; /* keep red for attention */
 }

@@ -1,0 +1,55 @@
+[
+  {
+    "id": "baby",
+    "title": "BABY",
+    "items": [
+      { "label": "Newborn", "href": "/men/newborn" },
+      { "label": "Sets", "href": "/men/sets" },
+      { "label": "Winter Wears", "href": "/men/sets" }
+    ]
+  },
+  {
+    "id": "boy",
+    "title": "BOY",
+    "items": [
+      { "label": "Onesies", "href": "/women/tops" },
+      { "label": "T-shirts", "href": "/women/bottoms" },
+      { "label": "Bottom", "href": "/women/bottoms" },
+      { "label": "Sets", "href": "/men/sets" },
+      { "label": "Winter wears", "href": "/women/winterwears" }
+    ]
+  },
+  {
+    "id": "girl",
+    "title": "GIRL",
+    "items": [
+      { "label": "Dresses", "href": "/kids/dresses" },
+      { "label": "Sets", "href": "/kids/dresses" },
+      { "label": "Tops", "href": "/kids/tops" },
+      { "label": "Bottoms", "href": "/kids/dresses" },
+      { "label": "Winter wears", "href": "/kids/accessories" }
+    ]
+  },
+  {
+    "id": "accessories",
+    "title": "ACCESSORIES",
+    "items": [
+      { "label": "Hats & Caps", "href": "/beauty/hats" },
+      { "label": "Hairs", "href": "/beauty/hats" },
+      { "label": "Footwear", "href": "/beauty/hats" },
+      { "label": "Socks & Mittens", "href": "/beauty/socks" },
+      { "label": "Bags", "href": "/beauty/bags" },
+      { "label": "Toys", "href": "/beauty/hats" },
+      { "label": "Jewellery", "href": "/beauty/hats" }
+    ]
+  },
+  {
+    "id": "collection",
+    "title": "GIFTS COLLECTION",
+    "items": [
+      { "label": "Girls", "href": "/collection/new-arrivals" },
+      { "label": "Boys", "href": "/collection/trending" },
+      { "label": "Newborn", "href": "/collection/summer" }
+    ]
+  }
+]

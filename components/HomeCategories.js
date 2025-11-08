@@ -24,7 +24,7 @@ export default function HomeCategories() {
         {categories.map(c => (
           <div key={c.id} className="col-6 col-sm-3">
             <Link href="/" legacyBehavior>
-              <a className="card rounded-circle category-card text-decoration-none text-dark " style={{height:"175px" ,width:"220px"}}>
+              <a className="card rounded-circle category-card text-decoration-none text-dark " style={{height:"12.2rem" ,width:"12.2rem"}}>
                 <img src={c.img} width="100px" height="100px"  alt={c.title} className="card-img-top rounded-circle category-img" onError={(e)=>{e.currentTarget.src='/images/placeholder.png'}} />
                 <div className="card-body py-2 text-center">
                   <div className="fw-semibold">{c.title}</div>

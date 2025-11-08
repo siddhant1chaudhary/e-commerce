@@ -15,7 +15,6 @@ export default function PrivacyPolicy() {
           <li>You can request data deletion by contacting support.</li>
         </ul>
       </div>
-      <Footer />
     </>
   );
 }

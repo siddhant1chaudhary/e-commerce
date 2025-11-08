@@ -8,11 +8,11 @@ export default function Footer() {
           <div className="col-6 col-md-3">
             <h6 className="text-uppercase fw-bold small">Online Shopping</h6>
             <ul className="list-unstyled mt-3">
-              <li><Link href="/men" className="text-muted text-decoration-none">Men</Link></li>
-              <li><Link href="/women" className="text-muted text-decoration-none">Women</Link></li>
-              <li><Link href="/kids" className="text-muted text-decoration-none">Kids</Link></li>
-              <li><Link href="/beauty" className="text-muted text-decoration-none">Beauty</Link></li>
-              <li><Link href="/genz" className="text-muted text-decoration-none">GenZ</Link></li>
+              <li><Link href="/men" className="text-muted text-decoration-none">Baby</Link></li>
+              <li><Link href="/women" className="text-muted text-decoration-none">Boy</Link></li>
+              <li><Link href="/kids" className="text-muted text-decoration-none">Girl</Link></li>
+              <li><Link href="/beauty" className="text-muted text-decoration-none">Accessories</Link></li>
+              <li><Link href="/genz" className="text-muted text-decoration-none">Gifts Collection</Link></li>
             </ul>
           </div>
 
@@ -74,7 +74,7 @@ export default function Footer() {
               <div className="d-flex align-items-center gap-2">
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="#6c757d"><path d="M21 10v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7"/></svg>
                 <div>
-                  <div className="fw-bold">Return within 14 days</div>
+                  <div className="fw-bold">Return within 7 days</div>
                   <div className="text-muted small">of receiving your order</div>
                 </div>
               </div>

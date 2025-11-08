@@ -5,10 +5,28 @@ import Breadcrumbs from './Breadcrumbs';
 import Image from 'next/image';
 import logo from '../utils/images/logo.png'; // Adjust the path as necessary
 import styles from '../styles/Header.module.css';
+import navHeader from '../data/navHeader.json'; // <-- import JSON
+import { useState } from 'react'; // added
 
-export default function Header() {
+export default function Header({ navConfig }) {
   const { user, logout, cart } = useAuth() || {};
   const cartCount = (cart?.items || []).reduce((s, it) => s + (it.qty || 0), 0);
+
+  // use provided config or fallback to imported JSON
+  const nav = navConfig || navHeader;
+
+  // track open dropdown by id
+  const [open, setOpen] = useState(null);
+
+  // helper to render dropdown items (supports optional item.className)
+  const renderDropdownItems = (items) =>
+    items.map((it, idx) => (
+      <li key={`${it.href || it.label}-${idx}`}>
+        <Link href={it.href || '#'} legacyBehavior>
+          <a className={`dropdown-item ${it.className || ''}`.trim()}>{it.label}</a>
+        </Link>
+      </li>
+    ));
 
   return (
     <header className={styles.header}>
@@ -18,7 +36,10 @@ export default function Header() {
             <a className="navbar-brand d-flex align-items-center">
               {/* simple text logo; replace with image if available */}
               <Image src={logo} alt="Logo" style={{ height: 38, marginRight: 10,width:38,borderRadius:'50px' }} onError={(e)=>{e.currentTarget.style.display='none'}} />
-              <h3><span style={{color:"#7dc4c3"}}>Tim</span><span style={{color:"#ef806f"}}>tom</span></h3>
+              <h3 className={styles.brand}>
+                <span className={styles.brandTim}>Tim</span>
+                <span className={styles.brandTom}>tom</span>
+              </h3>
             </a>
           </Link>
 
@@ -28,206 +49,33 @@ export default function Header() {
 
           <div className="collapse navbar-collapse justify-content-between" id="mainNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  id="babyDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  BABY
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="babyDropdown">
-                  <li>
-                    <Link href="/men/newborn" legacyBehavior>
-                      <a className="dropdown-item">Newborn</a>
-                    </Link>
+              {/* render nav dynamically from navConfig/defaultNav */}
+              {nav.map((cat) => {
+                const isOpen = open === cat.id;
+                return (
+                  <li
+                    className={`nav-item dropdown${isOpen ? ' show' : ''}`}
+                    key={cat.id}
+                    onMouseEnter={() => setOpen(cat.id)}
+                    onMouseLeave={() => setOpen(null)}
+                    onFocus={() => setOpen(cat.id)}
+                    onBlur={() => setOpen(null)}
+                  >
+                    <a
+                      className="nav-link dropdown-toggle"
+                      href="#"
+                      id={`${cat.id}Dropdown`}
+                      role="button"
+                      aria-expanded={isOpen ? 'true' : 'false'}
+                    >
+                      {cat.title}
+                    </a>
+                    <ul className={`dropdown-menu${isOpen ? ' show' : ''}`} aria-labelledby={`${cat.id}Dropdown`}>
+                      {renderDropdownItems(cat.items || [])}
+                    </ul>
                   </li>
-                  {/* <li>
-                    <Link href="/men/clothing" legacyBehavior>
-                      <a className="dropdown-item">Clothing</a>
-                    </Link>
-                  </li> */}
-                  <li>
-                    <Link href="/men/sets" legacyBehavior>
-                      <a className="dropdown-item">Sets</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/men/sets" legacyBehavior>
-                      <a className="dropdown-item">Winter Wears</a>
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  id="boyDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  BOY
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="boyDropdown">
-                  <li>
-                    <Link href="/women/tops" legacyBehavior>
-                      <a className="dropdown-item">Onesies</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/women/bottoms" legacyBehavior>
-                      <a className="dropdown-item">T-shirts</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/women/bottoms" legacyBehavior>
-                      <a className="dropdown-item">Bottom</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/men/sets" legacyBehavior>
-                      <a className="dropdown-item">Sets</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/women/winterwears" legacyBehavior>
-                      <a className="dropdown-item">Winter wears</a>
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  id="girlDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  GIRL
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="girlDropdown">
-                  <li>
-                    <Link href="/kids/dresses" legacyBehavior>
-                      <a className="dropdown-item">Dresses</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/kids/dresses" legacyBehavior>
-                      <a className="dropdown-item">Sets</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/kids/tops" legacyBehavior>
-                      <a className="dropdown-item">Tops</a>
-                    </Link>
-                  </li>
-                   <li>
-                    <Link href="/kids/dresses" legacyBehavior>
-                      <a className="dropdown-item">Bottoms</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/kids/accessories" legacyBehavior>
-                      <a className="dropdown-item">Winter wears</a>
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  id="accessoriesDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  ACCESSORIES
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="accessoriesDropdown">
-                  <li>
-                    <Link href="/beauty/hats" legacyBehavior>
-                      <a className="dropdown-item">Hats & Caps</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/beauty/hats" legacyBehavior>
-                      <a className="dropdown-item">Hairs</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/beauty/hats" legacyBehavior>
-                      <a className="dropdown-item">Footwear</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/beauty/socks" legacyBehavior>
-                      <a className="dropdown-item">Socks & Mittens</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/beauty/bags" legacyBehavior>
-                      <a className="dropdown-item">Bags</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/beauty/hats" legacyBehavior>
-                      <a className="dropdown-item">Toys</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/beauty/hats" legacyBehavior>
-                      <a className="dropdown-item">Jewellery</a>
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-              
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  id="collectionDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  GIFTS COLLECTION
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="collectionDropdown">
-                  <li>
-                    <Link href="/collection/new-arrivals" legacyBehavior>
-                      <a className="dropdown-item">Girls</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/collection/trending" legacyBehavior>
-                      <a className="dropdown-item">Boys</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/collection/summer" legacyBehavior>
-                      <a className="dropdown-item">Newborn</a>
-                    </Link>
-                  </li>
-                  {/* <li><hr className="dropdown-divider" /></li> */}
-                  {/* <li>
-                    <Link href="/collection/clearance" legacyBehavior>
-                      <a className="dropdown-item text-danger">Clearance</a>
-                    </Link>
-                  </li> */}
-                </ul>
-              </li>
+                );
+              })}
             </ul>
 
             <div className="d-flex align-items-center w-50 mx-3">
@@ -244,10 +92,10 @@ export default function Header() {
             <div className="d-flex align-items-center nav-icons ms-3" style={{ flex: '0 0 auto' }}>
               <Link href="/cart" legacyBehavior>
                 <a className="d-flex align-items-center text-decoration-none me-2 position-relative">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7dc4c3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className={styles.cartSvg} width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                   </svg>
-                  <span className="d-none d-lg-inline ms-1" style={{color:"#ef806f"}}>Cart</span>
+                  <span className={`d-none d-lg-inline ms-1 ${styles.cartText}`}>Cart</span>
                   {cartCount > 0 && (
                     <span className="badge bg-danger text-white rounded-pill ms-2" style={{fontSize:'.7rem'}}>{cartCount}</span>
                   )}

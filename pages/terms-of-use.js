@@ -15,7 +15,6 @@ export default function TermsOfUse() {
           <li>Users must provide accurate information during checkout.</li>
         </ul>
       </div>
-      <Footer />
     </>
   );
 }
