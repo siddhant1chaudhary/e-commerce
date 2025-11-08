@@ -42,7 +42,7 @@ export default function ProductPage() {
   async function handleAdd() {
     // require login
     if (!user) {
-      toast?.show({ type: 'info', message: 'Please login or sign up to add items to your bag' });
+      toast?.show({ type: 'info', message: 'Please login or sign up to add items to your cart' });
       router.push('/auth/login');
       return;
     }
@@ -55,7 +55,7 @@ export default function ProductPage() {
     setLoading(true);
     try {
       await addToCart({ productId: product.id, qty: 1, title: product.title, price: product.price, image: product.image });
-      toast?.show({ type: 'success', message: 'Added to bag' });
+      toast?.show({ type: 'success', message: 'Added to cart' });
     } catch (e) {
       toast?.show({ type: 'error', message: e?.message || 'Add to cart failed' });
     } finally {
@@ -145,7 +145,7 @@ export default function ProductPage() {
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="me-2 bi bi-bag" viewBox="0 0 16 16">
                     <path d="M8 1a2 2 0 0 0-2 2v1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-2V3a2 2 0 0 0-2-2z"/>
                   </svg>
-                  {loading ? 'Adding...' : 'ADD TO BAG'}
+                  {loading ? 'Adding...' : 'ADD TO CART'}
                 </button>
 
                 <button className="btn btn-outline-secondary btn-lg d-flex align-items-center gap-2" onClick={() => toast?.show({ type: 'info', message: 'Wishlist not implemented' })}>

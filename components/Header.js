@@ -28,12 +28,206 @@ export default function Header() {
 
           <div className="collapse navbar-collapse justify-content-between" id="mainNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
-              <li className="nav-item"><Link className="nav-link" href="/men">MEN</Link></li>
-              <li className="nav-item"><Link className="nav-link" href="/women">WOMEN</Link></li>
-              <li className="nav-item"><Link className="nav-link" href="/kids">KIDS</Link></li>
-              <li className="nav-item"><Link className="nav-link" href="/beauty">BEAUTY</Link></li>
-              <li className="nav-item"><Link className="nav-link" href="/genz">GENZ</Link></li>
-              <li className="nav-item"><Link className="nav-link text-danger" href="/studio">STUDIO</Link></li>
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="#"
+                  id="babyDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  BABY
+                </a>
+                <ul className="dropdown-menu" aria-labelledby="babyDropdown">
+                  <li>
+                    <Link href="/men/newborn" legacyBehavior>
+                      <a className="dropdown-item">Newborn</a>
+                    </Link>
+                  </li>
+                  {/* <li>
+                    <Link href="/men/clothing" legacyBehavior>
+                      <a className="dropdown-item">Clothing</a>
+                    </Link>
+                  </li> */}
+                  <li>
+                    <Link href="/men/sets" legacyBehavior>
+                      <a className="dropdown-item">Sets</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/men/sets" legacyBehavior>
+                      <a className="dropdown-item">Winter Wears</a>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="#"
+                  id="boyDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  BOY
+                </a>
+                <ul className="dropdown-menu" aria-labelledby="boyDropdown">
+                  <li>
+                    <Link href="/women/tops" legacyBehavior>
+                      <a className="dropdown-item">Onesies</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/women/bottoms" legacyBehavior>
+                      <a className="dropdown-item">T-shirts</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/women/bottoms" legacyBehavior>
+                      <a className="dropdown-item">Bottom</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/men/sets" legacyBehavior>
+                      <a className="dropdown-item">Sets</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/women/winterwears" legacyBehavior>
+                      <a className="dropdown-item">Winter wears</a>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="#"
+                  id="girlDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  GIRL
+                </a>
+                <ul className="dropdown-menu" aria-labelledby="girlDropdown">
+                  <li>
+                    <Link href="/kids/dresses" legacyBehavior>
+                      <a className="dropdown-item">Dresses</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/kids/dresses" legacyBehavior>
+                      <a className="dropdown-item">Sets</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/kids/tops" legacyBehavior>
+                      <a className="dropdown-item">Tops</a>
+                    </Link>
+                  </li>
+                   <li>
+                    <Link href="/kids/dresses" legacyBehavior>
+                      <a className="dropdown-item">Bottoms</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/kids/accessories" legacyBehavior>
+                      <a className="dropdown-item">Winter wears</a>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="#"
+                  id="accessoriesDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  ACCESSORIES
+                </a>
+                <ul className="dropdown-menu" aria-labelledby="accessoriesDropdown">
+                  <li>
+                    <Link href="/beauty/hats" legacyBehavior>
+                      <a className="dropdown-item">Hats & Caps</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/beauty/hats" legacyBehavior>
+                      <a className="dropdown-item">Hairs</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/beauty/hats" legacyBehavior>
+                      <a className="dropdown-item">Footwear</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/beauty/socks" legacyBehavior>
+                      <a className="dropdown-item">Socks & Mittens</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/beauty/bags" legacyBehavior>
+                      <a className="dropdown-item">Bags</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/beauty/hats" legacyBehavior>
+                      <a className="dropdown-item">Toys</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/beauty/hats" legacyBehavior>
+                      <a className="dropdown-item">Jewellery</a>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="#"
+                  id="collectionDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  GIFTS COLLECTION
+                </a>
+                <ul className="dropdown-menu" aria-labelledby="collectionDropdown">
+                  <li>
+                    <Link href="/collection/new-arrivals" legacyBehavior>
+                      <a className="dropdown-item">Girls</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/collection/trending" legacyBehavior>
+                      <a className="dropdown-item">Boys</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/collection/summer" legacyBehavior>
+                      <a className="dropdown-item">Newborn</a>
+                    </Link>
+                  </li>
+                  {/* <li><hr className="dropdown-divider" /></li> */}
+                  {/* <li>
+                    <Link href="/collection/clearance" legacyBehavior>
+                      <a className="dropdown-item text-danger">Clearance</a>
+                    </Link>
+                  </li> */}
+                </ul>
+              </li>
             </ul>
 
             <div className="d-flex align-items-center w-50 mx-3">
@@ -50,10 +244,10 @@ export default function Header() {
             <div className="d-flex align-items-center nav-icons ms-3" style={{ flex: '0 0 auto' }}>
               <Link href="/cart" legacyBehavior>
                 <a className="d-flex align-items-center text-decoration-none me-2 position-relative">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#212529" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7dc4c3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                   </svg>
-                  <span className="d-none d-lg-inline ms-1">Bag</span>
+                  <span className="d-none d-lg-inline ms-1" style={{color:"#ef806f"}}>Cart</span>
                   {cartCount > 0 && (
                     <span className="badge bg-danger text-white rounded-pill ms-2" style={{fontSize:'.7rem'}}>{cartCount}</span>
                   )}
@@ -82,8 +276,16 @@ export default function Header() {
                       Hi, {user.name || 'User'}
                     </button>
                     <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <li><Link className="dropdown-item" href="/profile">My Profile</Link></li>
-                      <li><Link className="dropdown-item" href="/profile/orders">My Orders</Link></li>
+                      <li>
+                        <Link href="/profile" legacyBehavior>
+                          <a className="dropdown-item">My Profile</a>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/profile/orders" legacyBehavior>
+                          <a className="dropdown-item">My Orders</a>
+                        </Link>
+                      </li>
                       <li>
                         <button className="dropdown-item text-danger" onClick={() => logout()}>
                           Logout

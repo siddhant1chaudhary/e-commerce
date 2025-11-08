@@ -1,4 +1,7 @@
 import React from 'react';
+import banner1 from '../utils/images/banner1.png';
+import banner2 from '../utils/images/banner2.jpg';
+import banner3 from '../utils/images/banner3.jpg';
 
 export default function BannerCarousel() {
   return (
@@ -10,13 +13,13 @@ export default function BannerCarousel() {
       </div>
       <div className="carousel-inner">
         <div className="carousel-item active">
-          <img src="https://as1.ftcdn.net/v2/jpg/03/20/68/66/1000_F_320686681_Ur6vdYQgDC9WiijiVfxlRyQffxOgfeFz.jpg" className="d-block w-100 carousel-hero" alt="banner1" />
+          <img src={banner1?.src || banner1} className="d-block w-100 carousel-hero" alt="banner1" />
         </div>
         <div className="carousel-item">
-          <img src="https://as2.ftcdn.net/v2/jpg/02/83/68/41/1000_F_283684148_VUiF5Ei9Uca6ResgLzeORpIu6vF1xsHJ.jpg" className="d-block w-100 carousel-hero" alt="banner2"  />
+          <img src={banner2?.src || banner2} className="d-block w-100 carousel-hero" alt="banner2"  />
         </div>
         <div className="carousel-item">
-          <img src="https://as1.ftcdn.net/v2/jpg/02/11/28/00/1000_F_211280049_g8nsjnEXE2383rW14OQ64Rg2WPANojKK.jpg" className="d-block w-100 carousel-hero" alt="banner3" />
+          <img src={banner3?.src || banner3} className="d-block w-100 carousel-hero" alt="banner3" />
         </div>
       </div>
       <button className="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">

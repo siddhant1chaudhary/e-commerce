@@ -14,7 +14,7 @@ export default function ProductCard({ product }) {
 
     // require login
     if (!user) {
-      toast?.show({ type: 'info', message: 'Please login or sign up to add items to your bag' });
+      toast?.show({ type: 'info', message: 'Please login or sign up to add items to your cart' });
       router.push('/auth/login');
       return;
     }
@@ -26,7 +26,7 @@ export default function ProductCard({ product }) {
     setLoading(true);
     try {
       await addToCart({ productId: product.id, qty: 1, title: product.title, price: product.price, image: product.image });
-      toast?.show({ type: 'success', message: 'Added to bag' });
+      toast?.show({ type: 'success', message: 'Added to cart' });
     } catch (err) {
       toast?.show({ type: 'error', message: err?.message || 'Add to cart failed' });
     } finally {
@@ -45,7 +45,7 @@ export default function ProductCard({ product }) {
         </div>
         <div className="mt-3">
           <button className="btn btn-sm btn-outline-primary w-100" onClick={handleAdd} disabled={loading}>
-            {loading ? 'Adding...' : 'Add to bag'}
+            {loading ? 'Adding...' : 'Add to cart'}
           </button>
         </div>
       </div>

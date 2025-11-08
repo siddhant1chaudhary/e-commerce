@@ -109,9 +109,9 @@ export default function CartPage() {
       <div>
         <Header />
         <main className="container py-5">
-          <h1 className="mb-4">Your Bag</h1>
+          <h1 className="mb-4">Your Cart</h1>
           <div className="card p-4 text-center">
-            <p className="mb-3">Your bag is empty.</p>
+            <p className="mb-3">Your cart is empty.</p>
             <Link href="/" legacyBehavior><a className="btn btn-primary">Continue shopping</a></Link>
           </div>
         </main>
@@ -125,7 +125,7 @@ export default function CartPage() {
     <div>
       <Header />
       <main className="container py-5">
-        <h1 className="mb-4">Your Bag ({cart.items.length})</h1>
+        <h1 className="mb-4">Your Cart ({cart.items.length})</h1>
 
         <div className="row">
           <div className="col-lg-8">

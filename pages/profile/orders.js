@@ -9,7 +9,7 @@ const fetcher = (url) => fetch(url, { credentials: 'same-origin' }).then(r => r.
 
 function statusToBadge(status) {
   if (status === 'placed') return { text: 'Placed', color: 'secondary', pct: 20 };
-  if (status === 'confirmed') return { text: 'Confirmed', color: 'info', pct: 40 };
+  if (status === 'in-progress') return { text: 'In Progress', color: 'info', pct: 40 };
   if (status === 'packed') return { text: 'Packed', color: 'primary', pct: 60 };
   if (status === 'shipped') return { text: 'Shipped', color: 'warning', pct: 80 };
   if (status === 'delivered') return { text: 'Delivered', color: 'success', pct: 100 };
