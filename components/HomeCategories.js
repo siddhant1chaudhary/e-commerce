@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import newBornImg from '../utils/images/newborn.png';
-import infantsImg from '../utils/images/infants.png';
-import toddlerImg from '../utils/images/toddler.png';
+import infantsImg from '../utils/images/Infants.png';
+import toddlerImg from '../utils/images/Toddler.png';
 import juniorsImg from '../utils/images/juniors.png';
 
 const categories = [
