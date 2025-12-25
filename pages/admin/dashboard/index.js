@@ -165,7 +165,7 @@ export default function AdminDashboard({ serverUser }) {
 								</tr>
 							</thead>
 							<tbody>
-								{orders?.map(order => (
+								{orders?.length && orders?.map(order => (
 									<tr key={order.id}>
 										<td>
 											<Link href={`/admin/orders/${order.id}`} legacyBehavior>

@@ -1,23 +1,45 @@
-import { getProducts, upsertItem } from '../../../lib/store';
+import { getProducts, upsertItem, normalizeProduct } from '../../../lib/store';
+import { verifyCsrf, parseCookies, verifyToken } from '../../../lib/auth';
 
 export default async function handler(req, res) {
   try {
     if (req.method === 'GET') {
-      const products = await getProducts();
-      res.status(200).json(products);
+      // read filters from query string
+      const { category = '', subCategory = '', ageGroup = '' } = req.query || {};
+      const products = await getProducts(); // already normalized in store
+      const filtered = (products || []).filter((p) => {
+        if (category && p.category && String(p.category).toLowerCase() !== String(category).toLowerCase()) return false;
+        if (subCategory && p.subCategory && String(p.subCategory).toLowerCase() !== String(subCategory).toLowerCase()) return false;
+        if (ageGroup && p.ageGroup && String(p.ageGroup).toLowerCase() !== String(ageGroup).toLowerCase()) return false;
+        return true;
+      });
+      res.status(200).json(filtered);
       return;
     }
 
     if (req.method === 'POST') {
-      const newProduct = {
-        id: Date.now().toString(),
-        title: req.body.title || 'Untitled',
-        price: Number(req.body.price) || 0,
-        description: req.body.description || '',
-        image: req.body.image || '/images/placeholder.png'
-      };
-      await upsertItem('products', newProduct);
-      res.status(201).json(newProduct);
+      // require CSRF and admin user for product creation
+      if (!verifyCsrf(req)) {
+        res.status(403).json({ error: 'Invalid CSRF' });
+        return;
+      }
+      const cookies = parseCookies(req);
+      const token = cookies['token'];
+      const payload = token ? verifyToken(token) : null;
+      if (!payload || payload.role !== 'admin') {
+        res.status(403).json({ error: 'Forbidden' });
+        return;
+      }
+
+      const body = req.body || {};
+      // ensure an id exists (store.upsertItem will further normalize)
+      if (!body.id) body.id = Date.now().toString();
+
+      // upsertItem will normalize and persist the canonical product schema
+      const saved = await upsertItem('products', body);
+      // normalize again for response safety
+      const normalized = normalizeProduct(saved);
+      res.status(201).json(normalized);
       return;
     }
 
@@ -25,14 +47,6 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   } catch (err) {
     console.error('products API error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  
-    products.unshift(newProduct);
-    await writeData(products);
-    res.status(201).json(newProduct);
-    return;
+    res.status(500).json({ error: 'Internal server error', message: err?.message || String(err) });
   }
-
-  res.setHeader('Allow', ['GET', 'POST']);
-  res.status(405).end(`Method ${req.method} Not Allowed`);
 }

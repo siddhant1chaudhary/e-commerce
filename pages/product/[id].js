@@ -1,9 +1,11 @@
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
+import Link from 'next/link';
+import Head from 'next/head';
 import Header from '../../components/Header';
+import useSWR from 'swr';
 import { useAuth } from '../../components/AuthProvider';
 import { useToast } from '../../components/ToastProvider';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react'; // added useEffect
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
 
@@ -18,26 +20,50 @@ export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
 
-  // derived values with fallbacks for demo data
+  // derived values with fallbacks (use new schema fields)
   const gallery = useMemo(() => {
-    if (!product) return [];
+    if (!product) return ['/images/placeholder.png'];
     const imgs = [];
+    if (product.mainImage) imgs.push(product.mainImage);
+    if (Array.isArray(product.additionalImages) && product.additionalImages.length) imgs.push(...product.additionalImages);
+    // compatibility: support legacy fields
     if (product.image) imgs.push(product.image);
-    if (product.images && Array.isArray(product.images)) imgs.push(...product.images);
-    // ensure unique and at least one placeholder
+    if (Array.isArray(product.images)) imgs.push(...product.images);
     return imgs.length ? Array.from(new Set(imgs)) : ['/images/placeholder.png'];
   }, [product]);
 
-  const mrp = product ? (product.mrp || Math.round((product.price || 0) * 1.6)) : 0;
-  const price = product ? (product.price || 0) : 0;
-  const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
-  const rating = product?.rating ?? 4.5;
-  const ratingCount = product?.ratingCount ?? 1300;
-  const sizes = product?.sizes && product.sizes.length ? product.sizes : ['Onesize'];
+  // prices (prefer discountPrice when present)
+  const originalPrice = product ? (product.price ?? 0) : 0;
+  const salePrice = product ? (product.discountPrice ?? product.price ?? 0) : 0;
+  const mrp = product ? (product.mrp ?? Math.round(originalPrice * 1.6)) : 0;
+  const discount = mrp > salePrice ? Math.round(((mrp - salePrice) / mrp) * 100) : 0;
 
-  // ensure selected image/size initial values
-  if (!selectedImage && gallery.length) setSelectedImage(gallery[0]);
-  if (!selectedSize && sizes.length) setSelectedSize(sizes[0]);
+  // rating: normalize shapes to numbers
+  const avgRating = product
+    ? Number(typeof product.rating === 'number' ? product.rating : (product.rating?.average ?? product.rating ?? 5)) || 5
+    : 0;
+  const ratingCount = product
+    ? Number(product.rating?.count ?? product.ratingCount ?? 5) || 5
+    : 0;
+
+  // sizes: support array of objects or strings
+  const sizeOptions = useMemo(() => {
+    if (!product) return ['Onesize'];
+    if (Array.isArray(product.sizes) && product.sizes.length) {
+      return product.sizes.map(s => (typeof s === 'string' ? s : (s.label || s.value || 'Onesize')));
+    }
+    if (product.freeSize?.available) return ['FreeSize'];
+    return ['Onesize'];
+  }, [product]);
+
+  // initialize selected image/size safely in effects
+  useEffect(() => {
+    if (gallery && gallery.length && !selectedImage) setSelectedImage(gallery[0]);
+  }, [gallery, selectedImage]);
+
+  useEffect(() => {
+    if (sizeOptions && sizeOptions.length && !selectedSize) setSelectedSize(sizeOptions[0]);
+  }, [sizeOptions, selectedSize]);
 
   async function handleAdd() {
     // require login
@@ -54,7 +80,16 @@ export default function ProductPage() {
 
     setLoading(true);
     try {
-      await addToCart({ productId: product.id, qty: 1, title: product.title, price: product.price, image: product.image });
+      await addToCart({
+        productId: product.id || product._id || '',
+        qty: 1,
+        title: product.title,
+        price: salePrice,
+        currency: product.currency || 'INR',
+        image: product.mainImage || (gallery[0] || '/images/placeholder.png'),
+        size: selectedSize,
+        product // include full product if cart expects product object
+      });
       toast?.show({ type: 'success', message: 'Added to cart' });
     } catch (e) {
       toast?.show({ type: 'error', message: e?.message || 'Add to cart failed' });
@@ -72,10 +107,31 @@ export default function ProductPage() {
     );
   }
 
+  // helper formatters
+  const fmtDate = (d) => {
+    try { return new Date(d).toLocaleString(); } catch (e) { return d || ''; }
+  };
+
+  // use 'from' query (set by ProductList links) to return to the previous listing.
+  const from = typeof router.query.from === 'string' && router.query.from ? router.query.from : null;
+
   return (
-    <div>
+    <>
+      <Head>
+        <title>{/* ...existing title code ... */}</title>
+      </Head>
+
       <Header />
       <main className="container py-4">
+        <div className="mb-3">
+          {from ? (
+            <Link href={from} legacyBehavior>
+              <a className="btn btn-sm btn-outline-secondary">&larr; Back to results</a>
+            </Link>
+          ) : (
+            <button className="btn btn-sm btn-outline-secondary" onClick={() => router.back()}>&larr; Back</button>
+          )}
+        </div>
         <div className="row g-4">
           {/* Gallery */}
           <div className="col-lg-6">
@@ -111,9 +167,16 @@ export default function ProductPage() {
               <h2 className="product-brand mb-1">{product.brand || 'Brand'}</h2>
               <h1 className="product-title h4">{product.title}</h1>
 
+              {/* new: category / subcategory / age group line */}
+              <div className="small text-muted mb-2">
+                <span className="me-3"><strong>Category:</strong> {product.category || '—'}</span>
+                <span className="me-3"><strong>Sub:</strong> {product.subCategory || '—'}</span>
+                <span className="me-3"><strong>Age:</strong> {product.ageGroup || '—'}</span>
+              </div>
+
               <div className="d-flex align-items-center gap-3 my-3">
                 <div className="rating-box d-flex align-items-center">
-                  <span className="fw-bold">{rating.toFixed(1)}</span>
+                  <span className="fw-bold">{avgRating.toFixed(1)}</span>
                   <small className="text-muted ms-2">| {ratingCount.toLocaleString()} Ratings</small>
                 </div>
               </div>
@@ -122,8 +185,12 @@ export default function ProductPage() {
 
               <div className="mb-3">
                 <div className="d-flex align-items-baseline gap-3">
-                  <div className="display-price fw-bold">₹{price}</div>
-                  <div className="text-muted text-decoration-line-through">MRP ₹{mrp}</div>
+                  <div className="display-price fw-bold">
+                    {product.currency || 'INR'} {salePrice}
+                  </div>
+                  <div className="text-muted text-decoration-line-through">
+                    {originalPrice > salePrice ? `${product.currency || 'INR'} ${originalPrice}` : null}
+                  </div>
                   {discount > 0 && <div className="text-danger fw-semibold">({discount}% OFF)</div>}
                 </div>
                 <div className="text-success small mt-1">inclusive of all taxes</div>
@@ -132,7 +199,7 @@ export default function ProductPage() {
               <div className="mb-4">
                 <div className="small fw-semibold mb-2">SELECT SIZE</div>
                 <div className="d-flex flex-wrap gap-2">
-                  {sizes.map((s) => (
+                  {sizeOptions.map((s) => (
                     <button key={s} className={`btn btn-outline-secondary size-pill ${selectedSize === s ? 'active' : ''}`} onClick={() => setSelectedSize(s)}>
                       {s}
                     </button>
@@ -149,8 +216,8 @@ export default function ProductPage() {
                 </button>
 
                 <button className="btn btn-outline-secondary btn-lg d-flex align-items-center gap-2" onClick={() => toast?.show({ type: 'info', message: 'Wishlist not implemented' })}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path d="M20.8 4.6a4.5 4.5 0 0 0-6.36 0L12 6.8l-2.44-2.2a4.5 4.5 0 1 0-6.36 6.36L12 21.2l8.8-10.24a4.5 4.5 0 0 0 0-6.36z"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.8 4.6a4.5 4.5 0 0 0-6.36 0L12 6.8l-2.44-2.2a4.5 4.5 0 1 0-6.36 6.36L12 21.2l8.8-10.24a4.5 4.5 0 0 0 0-6.36z" />
                   </svg>
                   WISHLIST
                 </button>
@@ -158,14 +225,40 @@ export default function ProductPage() {
 
               <div className="product-meta small text-muted">
                 <div><strong>Delivery:</strong> Free delivery available</div>
-                <div className="mt-1"><strong>Seller:</strong> {product.seller || 'Demo Seller'}</div>
+
+                {/* render seller object safely */}
+                <div className="mt-1">
+                  <strong>Seller:</strong>{' '}
+                  {product.seller?.sellerName || (typeof product.seller === 'string' ? product.seller : 'Demo Seller')}
+                  {product.seller?.rating ? <span className="text-muted ms-2">({Number(product.seller.rating).toFixed(1)})</span> : null}
+                </div>
+
+                {/* product type, stock, tags */}
+                {/* <div className="mt-1"><strong>Type:</strong> {product.productType || '—'}</div> */}
+                {/* <div className="mt-1"><strong>Stock:</strong> {typeof product.stock === 'number' ? (product.stock > 0 ? `${product.stock} available` : 'Out of stock') : '—'}</div> */}
+                {Array.isArray(product.tags) && product.tags.length > 0 && (
+                  <div className="mt-1">
+                    <strong>Tags:</strong>{' '}
+                    {product.tags.map((t) => (
+                      <span key={t} className="badge bg-light text-dark me-1">{t}</span>
+                    ))}
+                  </div>
+                )}
+
                 <div className="mt-1"><strong>Highlights:</strong> {product.description?.slice(0, 120) || 'Quality product'}</div>
+
+                {/* created / updated
+                <div className="mt-2 text-muted small">
+                  <div>Created: {fmtDate(product.createdAt)}</div>
+                  <div>Updated: {fmtDate(product.updatedAt)}</div>
+                </div> */}
               </div>
 
             </div>
           </div>
         </div>
       </main>
-    </div>
+
+    </>
   );
 }

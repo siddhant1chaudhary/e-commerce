@@ -8,11 +8,11 @@ export default function Footer() {
           <div className="col-6 col-md-3">
             <h6 className="text-uppercase fw-bold small">Online Shopping</h6>
             <ul className="list-unstyled mt-3">
-              <li><Link href="/men" className="text-muted text-decoration-none">Baby</Link></li>
-              <li><Link href="/women" className="text-muted text-decoration-none">Boy</Link></li>
-              <li><Link href="/kids" className="text-muted text-decoration-none">Girl</Link></li>
-              <li><Link href="/beauty" className="text-muted text-decoration-none">Accessories</Link></li>
-              <li><Link href="/genz" className="text-muted text-decoration-none">Gifts Collection</Link></li>
+              <li><Link href="/baby/all" className="text-muted text-decoration-none">Baby</Link></li>
+              <li><Link href="/boy/all" className="text-muted text-decoration-none">Boy</Link></li>
+              <li><Link href="/girl/all" className="text-muted text-decoration-none">Girl</Link></li>
+              <li><Link href="/accessories/all" className="text-muted text-decoration-none">Accessories</Link></li>
+              <li><Link href="/gift-collection/all" className="text-muted text-decoration-none">Gifts Collection</Link></li>
             </ul>
           </div>
 

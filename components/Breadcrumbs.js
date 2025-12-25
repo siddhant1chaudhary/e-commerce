@@ -53,7 +53,12 @@ export default function Breadcrumbs() {
 						{it.active ? (
 							it.label
 						) : (
-							<Link href={it.href} legacyBehavior><a className="text-decoration-none">{it.label}</a></Link>
+							// only Home should be clickable; other non-active items render as plain text
+							it.href === '/' ? (
+								<Link href={it.href} legacyBehavior><a className="text-decoration-none">{it.label}</a></Link>
+							) : (
+								it.label
+							)
 						)}
 					</li>
 				))}
