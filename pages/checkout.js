@@ -12,17 +12,34 @@ function getCookie(name) {
 }
 
 export default function CheckoutPage() {
-  const { cart, refreshCart } = useAuth() || {};
+  const { cart, refreshCart, user } = useAuth() || {};
   const [localCart, setLocalCart] = useState(cart || null);
   const [loading, setLoading] = useState(false);
   const [applying, setApplying] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [couponResult, setCouponResult] = useState(null);
   const [shipping, setShipping] = useState({ name: '', phone: '', address: '' });
+  const [addresses, setAddresses] = useState(null);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [addingNew, setAddingNew] = useState(false);
   const toast = useToast();
   const router = useRouter();
 
   useEffect(() => { setLocalCart(cart || null); }, [cart]);
+
+  useEffect(() => {
+    if (!user) return;
+    // fetch user addresses
+    fetch('/api/users/addresses', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((d) => {
+        const list = d.addresses || [];
+        setAddresses(list);
+        const def = list.find(a => a.isDefault) || list[0];
+        if (def) setSelectedAddressId(def.id);
+      })
+      .catch(() => setAddresses([]));
+  }, [user]);
 
   useEffect(() => {
     // ensure we have latest cart on mount
@@ -62,7 +79,13 @@ export default function CheckoutPage() {
     if (!localCart || !localCart.items || localCart.items.length === 0) {
       toast?.show({ type: 'error', message: 'Cart is empty' }); return;
     }
-    if (!shipping.name || !shipping.phone || !shipping.address) {
+    // determine shipping to use: selected saved address for logged-in user, otherwise form
+    let finalShipping = shipping;
+    if (user && selectedAddressId && Array.isArray(addresses)) {
+      const sel = addresses.find(a => a.id === selectedAddressId);
+      if (sel) finalShipping = { name: sel.name, phone: sel.phone, address: sel.address };
+    }
+    if (!finalShipping.name || !finalShipping.phone || !finalShipping.address) {
       toast?.show({ type: 'error', message: 'Please fill shipping details' }); return;
     }
 
@@ -70,7 +93,7 @@ export default function CheckoutPage() {
     try {
       if (typeof window !== 'undefined') {
         const payload = {
-          shipping,
+          shipping: finalShipping,
           couponCode: couponResult?.coupon?.code || couponCode || null,
           subtotal,
           discount,
