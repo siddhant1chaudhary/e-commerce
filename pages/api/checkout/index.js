@@ -86,6 +86,8 @@ export default async function handler(req, res) {
         price: Number(i.price) || 0,
         qty: Number(i.qty) || 0,
         image: i.image || '',
+        sku: i.sku || null,
+        size: i.size || null
       })),
       subtotal,
       discount,

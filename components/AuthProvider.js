@@ -74,14 +74,14 @@ export default function AuthProvider({ children }) {
   }, [router]);
 
   // memoized addToCart
-  const addToCart = useCallback(async ({ productId, qty = 1, title = '', price = 0, image = '' }) => {
+  const addToCart = useCallback(async ({ productId, qty = 1, title = '', price = 0, image = '', size = '' ,sku ='' }) => {
     try {
       const csrf = getCookie('csrf') || '';
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrf },
         credentials: 'same-origin',
-        body: JSON.stringify({ productId, qty, title, price, image })
+        body: JSON.stringify({ productId, qty, title, price, image ,size , sku })
       });
       if (!res.ok) {
         const e = await res.json().catch(()=>({}));

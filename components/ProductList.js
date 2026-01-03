@@ -11,6 +11,7 @@ export default function ProductList({ category, products: initialProducts }) {
   const router = useRouter();
   const { user, addToCart } = useAuth() || {};
   const toast = useToast();
+  const [selectedSizes, setSelectedSizes] = React.useState({});
 
   const { data: products } = useSWR(
     category ? `/api/products?category=${category}` : null,
@@ -28,6 +29,14 @@ export default function ProductList({ category, products: initialProducts }) {
       toast?.show?.({ type: 'error', message: 'Add to cart not available' });
       return;
     }
+    // if product has sizes, ensure user selected one
+    const hasSizes = Array.isArray(product.sizes) && product.sizes.length;
+    const chosenSize = selectedSizes[product.id] || (hasSizes ? null : null);
+    if (hasSizes && !chosenSize) {
+      toast?.show?.({ type: 'info', message: 'Please select a size before adding to cart' });
+      return;
+    }
+
     try {
       await addToCart({
         productId: product.id || product._id || '',
@@ -36,7 +45,8 @@ export default function ProductList({ category, products: initialProducts }) {
         price: product.discountPrice ?? product.price ?? 0,
         currency: product.currency || 'INR',
         image: product.mainImage || product.image || (product.images && product.images[0]) || '/images/placeholder.png',
-        size: (product.sizes && product.sizes[0]) || null,
+        sku: product.sku || product.skuCode || product.sku_code || null,
+        size: chosenSize || (product.sizes && product.sizes[0]) || null,
         product
       });
       toast?.show?.({ type: 'success', message: 'Added to cart' });
@@ -53,7 +63,7 @@ export default function ProductList({ category, products: initialProducts }) {
         </div>
       ) : products.map((product) => (
         <div key={product.id} className="col-6 col-md-4 col-lg-3">
-          <div className="card h-100 shadow-sm">
+            <div className="card h-100 shadow-sm">
             <Link href={`/product/${product.id}`} legacyBehavior>
               <a>
                 <img
@@ -66,6 +76,14 @@ export default function ProductList({ category, products: initialProducts }) {
             </Link>
             <div className="card-body d-flex flex-column">
               <h6 className="mb-1" style={{ minHeight: '2.2rem' }}>{product.title}</h6>
+              {Array.isArray(product.sizes) && product.sizes.length > 0 && (
+                <div className="mb-2">
+                  <select className="form-select form-select-sm mb-2" value={selectedSizes[product.id] || ''} onChange={(e) => setSelectedSizes({...selectedSizes, [product.id]: e.target.value})}>
+                    <option value="">Select size</option>
+                    {product.sizes.map((s) => <option key={s} value={s}>{typeof s === 'string' ? s : (s.label || s.value || s)}</option>)}
+                  </select>
+                </div>
+              )}
               <div className="mb-2 text-muted">
                 <div>{(product.discountPrice ?? product.price) ? `₹${product.discountPrice ?? product.price}` : '₹0'}</div>
                 <div className="small text-muted">

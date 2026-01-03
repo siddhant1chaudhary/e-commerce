@@ -8,6 +8,7 @@ export default function ProductCard({ product }) {
   const toast = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [selectedSize, setSelectedSize] = useState(null);
 
   async function handleAdd(e) {
     e.preventDefault();
@@ -25,7 +26,14 @@ export default function ProductCard({ product }) {
     }
     setLoading(true);
     try {
-      await addToCart({ productId: product.id, qty: 1, title: product.title, price: product.price, image: product.image });
+      // if product defines sizes, require selection
+      if (Array.isArray(product.sizes) && product.sizes.length && !selectedSize) {
+        toast?.show({ type: 'info', message: 'Please select a size before adding to cart' });
+        setLoading(false);
+        return;
+      }
+
+      await addToCart({ productId: product.id, qty: 1, title: product.title, price: product.price, image: product.image, sku: product.sku || product.skuCode || product.sku_code || null, size: selectedSize || (product.sizes && product.sizes[0]) || null });
       toast?.show({ type: 'success', message: 'Added to cart' });
     } catch (err) {
       toast?.show({ type: 'error', message: err?.message || 'Add to cart failed' });
@@ -39,6 +47,14 @@ export default function ProductCard({ product }) {
       <img src={product.image} className="card-img-top" alt={product.title} />
       <div className="card-body d-flex flex-column">
         <div className="product-title">{product.title}</div>
+        {Array.isArray(product.sizes) && product.sizes.length > 0 && (
+          <div className="mb-2 mt-2">
+            <select className="form-select form-select-sm" value={selectedSize || ''} onChange={(e) => setSelectedSize(e.target.value)}>
+              <option value="">Select size</option>
+              {product.sizes.map((s) => <option key={s} value={typeof s === 'string' ? s : (s.label || s.value || s)}>{typeof s === 'string' ? s : (s.label || s.value || s)}</option>)}
+            </select>
+          </div>
+        )}
         <div className="d-flex justify-content-between align-items-center mt-2">
           <div className="product-price">₹{product.price}</div>
           <div className="price-muted">Free delivery</div>

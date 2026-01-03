@@ -66,6 +66,8 @@ export default function OrderDetails({ order }) {
                 <div className="ms-3 flex-grow-1">
                   <div className="fw-semibold">{item.title}</div>
                   <div className="text-muted small">₹{item.price} x {item.qty}</div>
+                  {item.sku && <div className="small text-muted">SKU: {item.sku}</div>}
+                  {item.size && <div className="small text-muted">Size: {item.size}</div>}
                 </div>
                 <div className="fw-bold">₹{(item.price * item.qty).toFixed(2)}</div>
               </div>

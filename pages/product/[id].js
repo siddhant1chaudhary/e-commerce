@@ -22,14 +22,14 @@ export default function ProductPage() {
 
   // derived values with fallbacks (use new schema fields)
   const gallery = useMemo(() => {
-    if (!product) return ['/images/placeholder.png'];
+    if (!product) return [];
     const imgs = [];
     if (product.mainImage) imgs.push(product.mainImage);
     if (Array.isArray(product.additionalImages) && product.additionalImages.length) imgs.push(...product.additionalImages);
     // compatibility: support legacy fields
     if (product.image) imgs.push(product.image);
     if (Array.isArray(product.images)) imgs.push(...product.images);
-    return imgs.length ? Array.from(new Set(imgs)) : ['/images/placeholder.png'];
+    return imgs.length ? Array.from(new Set(imgs)) : [];
   }, [product]);
 
   // prices (prefer discountPrice when present)
@@ -62,9 +62,9 @@ export default function ProductPage() {
   }, [gallery, selectedImage]);
 
   useEffect(() => {
-    if (sizeOptions && sizeOptions.length && !selectedSize) setSelectedSize(sizeOptions[0]);
-  }, [sizeOptions, selectedSize]);
-
+    // Do not auto-select a size; require explicit user choice for validation
+  }, [sizeOptions]);
+console.log('Selected Size:', selectedSize);
   async function handleAdd() {
     // require login
     if (!user) {
@@ -78,9 +78,16 @@ export default function ProductPage() {
       return;
     }
 
+    // require explicit size selection when product has multiple sizes
+    const hasSizes = Array.isArray(sizeOptions) && sizeOptions.length && !(sizeOptions.length === 1 && sizeOptions[0] === 'Onesize');
+    if (hasSizes && !selectedSize) {
+      toast?.show({ type: 'info', message: 'Please select a size before adding to cart' });
+      return;
+    }
+
     setLoading(true);
     try {
-      await addToCart({
+      const payload ={
         productId: product.id || product._id || '',
         qty: 1,
         title: product.title,
@@ -89,7 +96,9 @@ export default function ProductPage() {
         image: product.mainImage || (gallery[0] || '/images/placeholder.png'),
         size: selectedSize,
         product // include full product if cart expects product object
-      });
+      }
+      console.log('Add to Cart Payload:', payload); 
+      await addToCart(payload);
       toast?.show({ type: 'success', message: 'Added to cart' });
     } catch (e) {
       toast?.show({ type: 'error', message: e?.message || 'Add to cart failed' });
@@ -208,7 +217,7 @@ export default function ProductPage() {
               </div>
 
               <div className="d-flex gap-3 mb-4">
-                <button className="btn btn-lg btn-add w-100 d-flex align-items-center justify-content-center" onClick={handleAdd} disabled={loading}>
+                <button className="btn btn-lg btn-add w-100 d-flex align-items-center justify-content-center" onClick={handleAdd} disabled={loading || (Array.isArray(sizeOptions) && sizeOptions.length && !selectedSize)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="me-2 bi bi-bag" viewBox="0 0 16 16">
                     <path d="M8 1a2 2 0 0 0-2 2v1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-2V3a2 2 0 0 0-2-2z"/>
                   </svg>

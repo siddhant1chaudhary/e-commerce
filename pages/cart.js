@@ -18,7 +18,6 @@ export default function CartPage() {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-
   useEffect(() => {
     // initialize with context cart and refresh from server
     if (!cart) {
@@ -136,8 +135,12 @@ export default function CartPage() {
                   <div className="ms-3 flex-grow-1">
                     <div className="d-flex justify-content-between">
                       <div>
-                        <div className="fw-semibold">{item.title}</div>
+                        <div className="fw-semibold">{item.title}{item.size ? ` — ${item.size}` : ''}</div>
                         <div className="text-muted small">₹{item.price}</div>
+                        {item.size && <div className="small text-muted">Size: {item.size}</div>}
+                        {(item.sizes && item.sizes.length > 0) || (item.product && item.product.sizes && item.product.sizes.length > 0) ? (
+                          <div className="small text-muted">Available: {(item.sizes && item.sizes.length ? item.sizes : (item.product && item.product.sizes ? item.product.sizes : [])).map(s => (typeof s === 'string' ? s : (s.label || s.value || s))).join(', ')}</div>
+                        ) : null}
                       </div>
                       <div className="text-end">
                         <div className="mb-2">₹{(item.price * item.qty).toFixed(2)}</div>

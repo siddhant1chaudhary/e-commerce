@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { verifyCsrf, parseCookies, verifyToken } from '../../../lib/auth';
+import { normalizeProduct } from '../../../lib/store';
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB;
@@ -20,7 +21,8 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-      res.status(200).json(product);
+      // return normalized product so clients always get the full schema (includes `sizes`)
+      res.status(200).json(normalizeProduct(product));
       return;
     }
 
@@ -40,8 +42,10 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PUT') {
-      const updated = { ...product, ...req.body };
-      await collection.updateOne({ id }, { $set: updated });
+      const updatedRaw = { ...product, ...req.body };
+      // normalize before returning to ensure sizes and other fields exist
+      const updated = normalizeProduct(updatedRaw);
+      await collection.updateOne({ id }, { $set: updatedRaw });
       res.status(200).json(updated);
       return;
     }

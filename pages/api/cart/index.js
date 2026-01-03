@@ -66,8 +66,23 @@ export default async function handler(req, res) {
   // POST: add item to resolved cart (create if needed)
   if (req.method === 'POST') {
     const body = req.body || {};
-    const { productId, qty = 1, title, price, image } = body;
+    const { productId, qty = 1, title, price, image, sku, size } = body;
     if (!productId) return res.status(400).json({ error: 'productId required' });
+    // if client didn't send a size, try to default to product's first size (if available)
+    let finalSize = size || null;
+    if (!finalSize) {
+      try {
+        const prodCol = await collectionFor('products');
+        const prod = await prodCol.findOne({ id: productId });
+        const prodSizes = prod && Array.isArray(prod.sizes) ? prod.sizes : [];
+        if (prodSizes.length) {
+          const s = prodSizes[0];
+          finalSize = typeof s === 'string' ? s : (s.label || s.value || null);
+        }
+      } catch (err) {
+        finalSize = null;
+      }
+    }
 
     let cart = resolveCart();
     if (!cart) {
@@ -81,12 +96,16 @@ export default async function handler(req, res) {
       cart.userId = userId;
     }
 
-    // upsert item
-    const idx = cart.items.findIndex(i => i.productId === productId);
+    // upsert item (include sku and size if provided)
+    // treat a product+size as a unique cart line
+    const idx = cart.items.findIndex(i => i.productId === productId && (i.size || '') === (finalSize || ''));
     if (idx === -1) {
-      cart.items.push({ productId, qty: Number(qty) || 1, title: title || '', price: Number(price) || 0, image: image || '' });
+      cart.items.push({ productId, qty: Number(qty) || 1, title: title || '', price: Number(price) || 0, image: image || '', sku: sku || null, size: finalSize || null });
     } else {
       cart.items[idx].qty = (cart.items[idx].qty || 0) + (Number(qty) || 1);
+      // if incoming sku or size present and existing item missing it, set them
+      if (sku && !cart.items[idx].sku) cart.items[idx].sku = sku;
+      if (finalSize && !cart.items[idx].size) cart.items[idx].size = finalSize;
     }
     cart.updatedAt = Date.now();
 

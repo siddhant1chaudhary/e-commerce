@@ -19,12 +19,13 @@ export default function NewProduct({ serverUser }) {
     ? (navHeader[0].items[0].subTitle || navHeader[0].items[0].label)
     : '';
 
-  // added ageGroup to form state
+  // added ageGroup to form state; support up to 4 image URLs
   const [form, setForm] = useState({
     title: '',
     price: '',
     description: '',
-    image: '',
+    images: ['', '', '', ''],
+    sizes: [],
     category: defaultCategory,
     subCategory: defaultSubCategory,
     ageGroup: 'Newborn' // default Shop by Age
@@ -61,9 +62,13 @@ export default function NewProduct({ serverUser }) {
   }
 
   function handleImageChange(e) {
+    // legacy single-arg handler fallback — not used after updates
     const url = e.target.value;
-    setForm({ ...form, image: url });
-    setPreview(url);
+    const imgs = Array.isArray(form.images) ? [...form.images] : ['', '', '', ''];
+    imgs[0] = url;
+    setForm({ ...form, images: imgs });
+    const first = imgs.find((x) => x && x.trim());
+    setPreview(first || '');
   }
 
   // helper to get current category object
@@ -75,16 +80,21 @@ export default function NewProduct({ serverUser }) {
     try {
       const csrf = getCookie('csrf') || '';
       // build product object; include category/subCategory matching new schema
+      const imgs = Array.isArray(form.images) ? form.images.filter(Boolean) : [];
+      const main = imgs.length ? imgs[0] : '/images/placeholder.png';
       const productPayload = {
         title: form.title,
         price: Number(form.price) || 0,
         description: form.description,
-        mainImage: form.image || '/images/placeholder.png',
+        mainImage: main,
+        additionalImages: imgs,
+        sku: form.sku || null,
+        sizes: Array.isArray(form.sizes) ? form.sizes : [],
         category: form.category || '',
         subCategory: form.subCategory || '',
         ageGroup: form.ageGroup || 'Uncategorized', // new field
-        // keep older field too for compatibility if API expects 'image'
-        image: form.image || '/images/placeholder.png'
+        // keep older field too for backward compatibility
+        image: main
       };
 
       const res = await fetch('/api/products', {
@@ -126,10 +136,69 @@ export default function NewProduct({ serverUser }) {
                     <label className="form-label">Price</label>
                     <input className="form-control" value={form.price} onChange={(e)=>setForm({...form,price:e.target.value})} required />
                   </div>
-                  <div className="col">
-                    <label className="form-label">Image URL</label>
-                    <input className="form-control" value={form.image} onChange={handleImageChange} placeholder="https://..." />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Image URLs (maximum 4)</label>
+                  <div className="d-flex gap-2 flex-wrap">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <input
+                        key={i}
+                        className="form-control"
+                        placeholder={i === 0 ? 'Main image URL (recommended)' : `Image ${i + 1} URL`}
+                        value={(form.images && form.images[i]) || ''}
+                        onChange={(e) => {
+                          const imgs = Array.isArray(form.images) ? [...form.images] : ['', '', '', ''];
+                          imgs[i] = e.target.value;
+                          setForm({ ...form, images: imgs });
+                          const first = imgs.find((x) => x && x.trim());
+                          setPreview(first || '');
+                        }}
+                        style={{ minWidth: 0, flex: '1 1 200px' }}
+                      />
+                    ))}
                   </div>
+                  <div className="form-text">Provide up to 4 image URLs. First non-empty URL will be used as main image.</div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">SKU Code</label>
+                  <input
+                    className="form-control"
+                    placeholder="e.g. SKU-12345 (unique)"
+                    value={form.sku || ''}
+                    onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                  />
+                  <div className="form-text">Optional: enter a SKU to help find products in admin and orders.</div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Sizes</label>
+                  <div className="d-flex gap-2 mb-2">
+                    <input id="size-input" className="form-control" placeholder="Enter size (e.g. S, M, 6, 12-18 months)" style={{flex: '1 1 auto'}} />
+                    <button type="button" className="btn btn-outline-primary" onClick={() => {
+                      const el = document.getElementById('size-input');
+                      if (!el) return;
+                      const val = el.value && String(el.value).trim();
+                      if (!val) return;
+                      const next = Array.isArray(form.sizes) ? [...form.sizes] : [];
+                      if (!next.includes(val)) next.push(val);
+                      setForm({ ...form, sizes: next });
+                      el.value = '';
+                    }}>Add</button>
+                  </div>
+                  <div>
+                    {(form.sizes || []).map((s, idx) => (
+                      <span key={idx} className="badge bg-secondary me-2" style={{padding: '0.5rem 0.6rem'}}>
+                        {s}
+                        <button type="button" aria-label="remove" title="Remove" onClick={() => {
+                          const next = (form.sizes || []).filter(x => x !== s);
+                          setForm({ ...form, sizes: next });
+                        }} className="btn btn-sm btn-link text-white ms-2 p-0" style={{textDecoration: 'none'}}>×</button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="form-text">Optional sizes list — will be stored as an array on the product.</div>
                 </div>
 
                 <div className="mb-3">
@@ -188,8 +257,16 @@ export default function NewProduct({ serverUser }) {
           <div className="col-lg-4">
             <div className="card p-3">
               <h6 className="mb-2">Preview</h6>
-              <img src={preview || form.image || '/images/placeholder.png'} alt="preview" style={{width:'100%', height:240, objectFit:'cover', borderRadius:6}} />
+              <img src={preview || (form.images && form.images[0]) || '/images/placeholder.png'} alt="preview" style={{width:'100%', height:240, objectFit:'cover', borderRadius:6}} />
+              <div className="mt-2 d-flex gap-2">
+                {(form.images || []).map((src, idx) => src ? (
+                  <img key={idx} src={src} alt={`thumb-${idx}`} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6 }} />
+                ) : null)}
+              </div>
               <div className="mt-3">
+                {Array.isArray(form.sizes) && form.sizes.length > 0 && (
+                  <div className="mb-2"><strong>Sizes:</strong> {form.sizes.join(', ')}</div>
+                )}
                 <div className="fw-semibold">{form.title || 'Product title'}</div>
                 <div className="text-muted">₹{form.price || '0'}</div>
                 <div className="small mt-2 text-muted">{(form.description || 'Short description').slice(0,120)}</div>

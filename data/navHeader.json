@@ -16,7 +16,7 @@
     "items": [
       { "label": "Onesies", "href": "/boy/onesies" },
       { "label": "T-shirts", "href": "/boy/t-shirts" },
-      { "label": "Bottom", "href": "/boy/bottoms" },
+      { "label": "Bottom", "href": "/boy/bottom" },
       { "label": "Sets", "href": "/boy/sets" },
       { "label": "Winter wears", "href": "/boy/winterwears" }
     ]
@@ -29,7 +29,7 @@
       { "label": "Dresses", "href": "/girl/dresses" },
       { "label": "Sets", "href": "/girl/sets" },
       { "label": "Tops", "href": "/girl/tops" },
-      { "label": "Bottoms", "href": "/girl/bottoms" },
+      { "label": "Bottom", "href": "/girl/bottom" },
       { "label": "Winter wears", "href": "/girl/winterwears" }
     ]
   },
