@@ -44,7 +44,7 @@ export default function ProductCard({ product }) {
 
   return (
     <div className="card card-demo h-100">
-      <img src={product.image} className="card-img-top" alt={product.title} />
+      <img src={product.mainImage} className="card-img-top" alt={product.title} />
       <div className="card-body d-flex flex-column">
         <div className="product-title">{product.title}</div>
         {Array.isArray(product.sizes) && product.sizes.length > 0 && (
