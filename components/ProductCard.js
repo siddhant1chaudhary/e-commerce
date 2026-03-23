@@ -9,7 +9,7 @@ export default function ProductCard({ product }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
-
+console.log('ProductCard render', { product, selectedSize });
   async function handleAdd(e) {
     e.preventDefault();
 
