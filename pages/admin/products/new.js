@@ -6,6 +6,9 @@ import { parseCookies, verifyToken } from '../../../lib/auth';
 import { useToast } from '../../../components/ToastProvider';
 import navHeader from '../../../data/navHeader.json'; // added
 
+// default token; override via NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN for production
+const BLOB_READ_WRITE_TOKEN = process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN;
+
 function getCookie(name) {
   if (typeof document === 'undefined') return null;
   const matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[]\/+^])/g, '\\$1') + '=([^;]*)'));
@@ -36,6 +39,7 @@ export default function NewProduct({ serverUser }) {
   const user = clientUser || serverUser;
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   if (!user) {
     return (
@@ -69,6 +73,33 @@ export default function NewProduct({ serverUser }) {
     setForm({ ...form, images: imgs });
     const first = imgs.find((x) => x && x.trim());
     setPreview(first || '');
+  }
+
+  async function uploadImageFile(index, file) {
+    if (!file || index < 0 || index > 3) return;
+
+    setUploading(true);
+    try {
+      const { put } = await import('@vercel/blob');
+      const ext = file.name.split('.').pop() || 'jpg';
+      const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { url } = await put(`products/${safeName}`, file, {
+        access: 'public',
+        token: BLOB_READ_WRITE_TOKEN,
+      });
+
+      if (!url) throw new Error('Blob upload returned no URL');
+
+      const nextImages = Array.isArray(form.images) ? [...form.images] : ['', '', '', ''];
+      nextImages[index] = url;
+      setForm({ ...form, images: nextImages });
+      setPreview(nextImages.find((x) => x && x.trim()) || '');
+      toast?.show({ type: 'success', message: `Image ${index + 1} uploaded` });
+    } catch (err) {
+      toast?.show({ type: 'error', message: `Upload failed: ${err?.message || err}` });
+    } finally {
+      setUploading(false);
+    }
   }
 
   // helper to get current category object
@@ -139,26 +170,52 @@ export default function NewProduct({ serverUser }) {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">Image URLs (maximum 4)</label>
+                  <label className="form-label">Upload image files (4 slots)</label>
                   <div className="d-flex gap-2 flex-wrap">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <input
-                        key={i}
-                        className="form-control"
-                        placeholder={i === 0 ? 'Main image URL (recommended)' : `Image ${i + 1} URL`}
-                        value={(form.images && form.images[i]) || ''}
-                        onChange={(e) => {
-                          const imgs = Array.isArray(form.images) ? [...form.images] : ['', '', '', ''];
-                          imgs[i] = e.target.value;
-                          setForm({ ...form, images: imgs });
-                          const first = imgs.find((x) => x && x.trim());
-                          setPreview(first || '');
-                        }}
-                        style={{ minWidth: 0, flex: '1 1 200px' }}
-                      />
-                    ))}
+                    {Array.from({ length: 4 }).map((_, i) => {
+                      const src = (form.images && form.images[i]) || '';
+                      return (
+                        <div key={i} className="border rounded p-2" style={{ minWidth: 220, flex: '1 1 220px' }}>
+                          <div className="mb-2" style={{ height: 100, backgroundColor: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {src ? (
+                              <img src={src} alt={`img-${i}`} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                            ) : (
+                              <span className="text-muted">Slot {i + 1} empty</span>
+                            )}
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="form-control form-control-sm mb-2"
+                            onChange={(e) => {
+                              const file = e.target.files && e.target.files[0];
+                              if (file) {
+                                uploadImageFile(i, file);
+                              }
+                            }}
+                            disabled={uploading}
+                          />
+                          <div className="d-flex justify-content-between">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => {
+                                const next = Array.isArray(form.images) ? [...form.images] : ['', '', '', ''];
+                                next[i] = '';
+                                setForm({ ...form, images: next });
+                                setPreview(next.find((x) => x && x.trim()) || '');
+                              }}
+                            >
+                              Remove
+                            </button>
+                            <span className="text-muted small">{i === 0 ? 'Main' : `Image ${i + 1}`}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="form-text">Provide up to 4 image URLs. First non-empty URL will be used as main image.</div>
+                  <div className="form-text">Use 1-4 images. Uploaded files are stored in blob and previewed above.</div>
+                  {uploading && <div className="form-text text-primary">Uploading... please wait.</div>}
                 </div>
 
                 <div className="mb-3">
