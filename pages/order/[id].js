@@ -8,9 +8,20 @@ const dbName = process.env.MONGODB_DB;
 export default function OrderPage({ order, user }) {
   const [currentOrder, setCurrentOrder] = useState(order);
   const [isCanceling, setIsCanceling] = useState(false);
+  const [isRequestingReturn, setIsRequestingReturn] = useState(false);
+
+  const canCancel =
+    currentOrder?.status === 'placed' ||
+    currentOrder?.status === 'in-progress' ||
+    currentOrder?.status === 'packed';
 
   const handleCancelOrder = async () => {
     if (!confirm('Are you sure you want to cancel this order?')) {
+      return;
+    }
+
+    if (!canCancel) {
+      alert('Cancel is not available for this order.');
       return;
     }
 
@@ -47,6 +58,43 @@ export default function OrderPage({ order, user }) {
       setIsCanceling(false);
     }
   };
+
+  async function handleRequestReturn() {
+    if (!currentOrder?.id) return;
+    const eligible = currentOrder.status === 'delivered';
+
+    if (!eligible) {
+      alert('Return request is not available for this order.');
+      return;
+    }
+
+    if (currentOrder.returnRequest?.status && currentOrder.returnRequest.status !== 'rejected') {
+      alert('Return already requested.');
+      return;
+    }
+
+    const reason = prompt('Reason for return (optional):') || '';
+    setIsRequestingReturn(true);
+    try {
+      const res = await fetch(`/api/orders/${currentOrder.id}/return`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ reason })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Return request failed');
+      }
+      const updatedOrder = await res.json();
+      setCurrentOrder(updatedOrder);
+      alert('Return request submitted.');
+    } catch (err) {
+      alert(err.message || 'Return request failed');
+    } finally {
+      setIsRequestingReturn(false);
+    }
+  }
 
   if (!currentOrder) {
     return (
@@ -98,12 +146,26 @@ export default function OrderPage({ order, user }) {
           <div className="mt-4">
             <a href="/" className="btn btn-primary">Continue shopping</a>
             <button
-              className="btn btn-danger ms-2"
-              onClick={handleCancelOrder}
-              disabled={currentOrder.status === 'canceled' || currentOrder.status === 'shipped' || isCanceling}
+              className="btn btn-outline-danger ms-2"
+              onClick={handleRequestReturn}
+              disabled={
+                currentOrder.status !== 'delivered' ||
+                isRequestingReturn ||
+                !!(currentOrder.returnRequest && currentOrder.returnRequest.status && currentOrder.returnRequest.status !== 'rejected') ||
+                false
+              }
             >
-              {currentOrder.status === 'canceled' ? 'Order Canceled' : 'Cancel Order'}
+              {currentOrder.returnRequest?.status && currentOrder.returnRequest.status !== 'rejected' ? 'Return Requested' : 'Request Return'}
             </button>
+            {canCancel && (
+              <button
+                className="btn btn-danger ms-2"
+                onClick={handleCancelOrder}
+                disabled={isCanceling}
+              >
+                {currentOrder.status === 'canceled' ? 'Order Canceled' : 'Cancel Order'}
+              </button>
+            )}
           </div>
         </div>
       </main>

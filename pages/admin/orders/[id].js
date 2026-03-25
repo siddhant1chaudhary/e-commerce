@@ -73,6 +73,37 @@ export default function OrderDetails({ order }) {
               </div>
             ))}
           </div>
+
+          {/* Return Request (user-initiated) */}
+          {order.returnRequest && (
+            <div className="mt-4">
+              <h6 className="text-secondary">Return Request</h6>
+              <div className="card p-3">
+                <p className="mb-1">
+                  <strong>Status:</strong>{' '}
+                  <span className={`badge ${order.returnRequest.status === 'requested' ? 'bg-warning text-dark' : order.returnRequest.status === 'rejected' ? 'bg-danger' : 'bg-info text-dark'}`}>
+                    {order.returnRequest.status}
+                  </span>
+                </p>
+                {order.returnRequest.requestedAt && (
+                  <p className="mb-1">
+                    <strong>Requested At:</strong> {new Date(order.returnRequest.requestedAt).toLocaleString()}
+                  </p>
+                )}
+                {(order.returnRequest.returnDeliveredAt || order.returnRequest.deliveredAt) && (
+                  <p className="mb-1">
+                    <strong>Return Delivered At:</strong>{' '}
+                    {new Date(order.returnRequest.returnDeliveredAt || order.returnRequest.deliveredAt).toLocaleDateString()}
+                  </p>
+                )}
+                {order.returnRequest.reason && (
+                  <p className="mb-0">
+                    <strong>Reason:</strong> {order.returnRequest.reason}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
