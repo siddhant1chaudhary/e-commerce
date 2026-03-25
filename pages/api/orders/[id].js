@@ -48,7 +48,9 @@ export default async function handler(req, res) {
       }
 
       // Allow cancellation only if the order is not shipped or delivered
-      if (status === 'canceled' && ['shipped', 'delivered'].includes(order.status)) {
+      // Keep original behavior: you can't cancel after shipped/delivered,
+      // but allow cancel at the end of the return-delivered stage.
+      if (status === 'canceled' && ['shipped', 'delivered', 'return-requested', 'return-in-progress', 'return-shipped', 'return-delivered'].includes(order.status)) {
         return res.status(400).json({ error: 'Order cannot be canceled after it is shipped or delivered' });
       }
 

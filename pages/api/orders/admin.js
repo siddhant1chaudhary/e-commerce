@@ -38,7 +38,29 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Order ID and status are required' });
       }
 
-      const updateFields = { status };
+      const updateFields = { status, updatedAt: new Date().toISOString() };
+
+      // Persist delivery timestamp so user can request returns for a limited window.
+      if (status === 'delivered') {
+        // Note: we set deliveredAt every time it becomes "delivered".
+        updateFields.deliveredAt = new Date().toISOString();
+      }
+
+      // Return-flow status synchronization
+      const returnStatusMap = {
+        'return-requested': { returnStatus: 'requested' },
+        'return-in-progress': { returnStatus: 'in-progress' },
+        'return-shipped': { returnStatus: 'shipped' },
+        'return-delivered': { returnStatus: 'delivered' }
+      };
+
+      if (returnStatusMap[status]) {
+        updateFields['returnRequest.status'] = returnStatusMap[status].returnStatus;
+        if (status === 'return-delivered') {
+          updateFields.returnDeliveredAt = new Date().toISOString();
+          updateFields['returnRequest.returnDeliveredAt'] = new Date().toISOString();
+        }
+      }
 
       // If the status is "canceled", include the canceledBy field
       if (status === 'canceled' && canceledBy) {

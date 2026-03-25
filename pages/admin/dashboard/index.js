@@ -178,7 +178,7 @@ export default function AdminDashboard({ serverUser }) {
 												className={`badge ${
 													order.status === 'canceled'
 														? 'bg-danger'
-														: order.status === 'delivered'
+												: order.status === 'delivered' || order.status === 'return-delivered'
 														? 'bg-success'
 														: 'bg-warning text-dark'
 												}`}
@@ -201,8 +201,13 @@ export default function AdminDashboard({ serverUser }) {
 											>
 												<option value="placed">Placed</option>
 												<option value="in-progress">In Progress</option>
+												<option value="packed">Packed</option>
 												<option value="shipped">Shipped</option>
 												<option value="delivered">Delivered</option>
+												<option value="return-requested">Return Requested</option>
+												<option value="return-in-progress">Return In Progress</option>
+												<option value="return-shipped">Return Shipped</option>
+												<option value="return-delivered">Return Delivered</option>
 												<option value="canceled">Canceled</option>
 											</select>
 										</td>
