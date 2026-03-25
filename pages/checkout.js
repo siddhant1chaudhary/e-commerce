@@ -19,6 +19,7 @@ export default function CheckoutPage() {
   const [couponCode, setCouponCode] = useState('');
   const [couponResult, setCouponResult] = useState(null);
   const [shipping, setShipping] = useState({ name: '', phone: '', address: '' });
+  const [profileName, setProfileName] = useState('');
   const [addresses, setAddresses] = useState(null);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
@@ -29,6 +30,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!user) return;
+    fetch('/api/users/profile', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((d) => setProfileName(d?.name || ''))
+      .catch(() => setProfileName(''));
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
     // fetch user addresses
     fetch('/api/users/addresses', { credentials: 'same-origin' })
       .then((r) => r.json())
@@ -36,10 +45,33 @@ export default function CheckoutPage() {
         const list = d.addresses || [];
         setAddresses(list);
         const def = list.find(a => a.isDefault) || list[0];
-        if (def) setSelectedAddressId(def.id);
+        if (def) {
+          setSelectedAddressId(def.id);
+          // Full name should come from profile; address provides phone + address.
+          setShipping({
+            name: profileName || (def.name || ''),
+            phone: def.phone || '',
+            address: def.address || ''
+          });
+        }
       })
       .catch(() => setAddresses([]));
-  }, [user]);
+  }, [user]); // do not depend on profileName to avoid extra fetch loops
+
+  useEffect(() => {
+    if (!user || !Array.isArray(addresses) || !selectedAddressId) return;
+    const sel = addresses.find(a => a.id === selectedAddressId);
+    if (!sel) return;
+    setShipping({ name: profileName || sel.name || '', phone: sel.phone || '', address: sel.address || '' });
+  }, [user, addresses, selectedAddressId]);
+
+  useEffect(() => {
+    if (!user || !Array.isArray(addresses) || !selectedAddressId) return;
+    if (!profileName) return;
+    const sel = addresses.find(a => a.id === selectedAddressId);
+    if (!sel) return;
+    setShipping((prev) => ({ ...prev, name: profileName }));
+  }, [profileName, user, addresses, selectedAddressId]);
 
   useEffect(() => {
     // ensure we have latest cart on mount
@@ -83,7 +115,7 @@ export default function CheckoutPage() {
     let finalShipping = shipping;
     if (user && selectedAddressId && Array.isArray(addresses)) {
       const sel = addresses.find(a => a.id === selectedAddressId);
-      if (sel) finalShipping = { name: sel.name, phone: sel.phone, address: sel.address };
+      if (sel) finalShipping = { name: profileName || shipping.name, phone: sel.phone, address: sel.address };
     }
     if (!finalShipping.name || !finalShipping.phone || !finalShipping.address) {
       toast?.show({ type: 'error', message: 'Please fill shipping details' }); return;
@@ -116,6 +148,35 @@ export default function CheckoutPage() {
           <div className="col-lg-7">
             <div className="card p-3 mb-3">
               <h5 className="mb-3">Shipping details</h5>
+              {user && Array.isArray(addresses) && addresses.length > 0 && (
+                <div className="mb-3">
+                  <label className="form-label small text-muted">Saved address</label>
+                  <select
+                    className="form-select"
+                    value={selectedAddressId || 'manual'}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === 'manual') {
+                        setSelectedAddressId(null);
+                        setAddingNew(true);
+                        // Clear only address fields; keep fullname from profile.
+                        setShipping((prev) => ({ ...prev, phone: '', address: '' }));
+                        return;
+                      }
+                      setAddingNew(false);
+                      setSelectedAddressId(v);
+                    }}
+                  >
+                    {addresses.map(a => (
+                      <option key={a.id} value={a.id}>
+                        {a.name ? `${a.name} (${a.phone || 'no-phone'})` : (a.phone || a.address || 'Address')}
+                        {a.isDefault ? ' • Default' : ''}
+                      </option>
+                    ))}
+                    <option value="manual">Enter a new address</option>
+                  </select>
+                </div>
+              )}
               <div className="mb-2">
                 <label className="form-label small">Full name</label>
                 <input className="form-control" value={shipping.name} onChange={(e)=>setShipping({...shipping,name:e.target.value})} />

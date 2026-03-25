@@ -132,10 +132,10 @@ export default function PaymentPage() {
                   <input className="form-check-input" type="radio" name="methodType" id="cod" value="COD" checked={methodType === 'COD'} onChange={()=>setMethodType('COD')} />
                   <label className="form-check-label" htmlFor="cod">Cash on Delivery</label>
                 </div>
-                <div className="form-check mt-2">
+                {/* <div className="form-check mt-2">
                   <input className="form-check-input" type="radio" name="methodType" id="online" value="ONLINE" checked={methodType === 'ONLINE'} onChange={()=>setMethodType('ONLINE')} />
                   <label className="form-check-label" htmlFor="online">Pay Online</label>
-                </div>
+                </div> */}
               </div>
 
               {methodType === 'ONLINE' && (
