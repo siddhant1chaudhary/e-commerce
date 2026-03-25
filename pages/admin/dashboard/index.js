@@ -138,7 +138,7 @@ export default function AdminDashboard({ serverUser }) {
 						{recent.map(p => (
 							<div key={p.id} className="col-6 col-md-3">
 								<div className="card h-100">
-									<img src={p.image || '/images/placeholder.png'} alt={p.title} style={{height:140, objectFit:'cover'}} />
+									<img src={p.mainImage || '/images/placeholder.png'} alt={p.title} style={{height:140, objectFit:'cover'}} />
 									<div className="p-2">
 										<div className="small fw-semibold">{p.title}</div>
 										<div className="text-muted small">₹{p.price}</div>
