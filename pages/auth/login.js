@@ -83,7 +83,7 @@ export default function Login() {
 
               <div className="mt-3">
                 <a href="/auth/signup" className="text-decoration-none">Create an account</a>
-                <div className="text-muted small mt-2">Forgot your password? <a href="#" className="text-danger">Reset here</a></div>
+                <div className="text-muted small mt-2">Forgot your password? <a href="/auth/forgot-password" className="text-danger">Reset here</a></div>
               </div>
             </div>
           </div>
