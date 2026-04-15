@@ -200,7 +200,7 @@ console.log('Selected Size:', selectedSize);
                   <div className="text-muted text-decoration-line-through">
                     {originalPrice > salePrice ? `${product.currency || 'INR'} ${originalPrice}` : null}
                   </div>
-                  {discount > 0 && <div className="text-danger fw-semibold">({discount}% OFF)</div>}
+                  {/* {discount > 0 && <div className="text-danger fw-semibold">({discount}% OFF)</div>} */}
                 </div>
                 <div className="text-success small mt-1">inclusive of all taxes</div>
               </div>
