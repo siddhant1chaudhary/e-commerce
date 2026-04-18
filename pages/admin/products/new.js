@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../../../components/Header';
 import { useAuth } from '../../../components/AuthProvider';
@@ -15,26 +15,51 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : null;
 }
 
-export default function NewProduct({ serverUser }) {
+export default function ProductForm({ serverUser, product }) {
+  const router = useRouter();
+  const { id } = router.query;
+  const isEditMode = !!id && !!product;
+
   // initialize category/subCategory from navHeader if available
   const defaultCategory = (navHeader && navHeader.length) ? navHeader[0].subTitle : '';
   const defaultSubCategory = (navHeader && navHeader[0] && navHeader[0].items && navHeader[0].items[0])
     ? (navHeader[0].items[0].subTitle || navHeader[0].items[0].label)
     : '';
 
-  // added ageGroup to form state; support up to 4 image URLs
+  // Initialize form with product data if editing, otherwise use defaults
+  const getInitialImages = () => {
+    if (!product) return ['', '', '', ''];
+    // Check for images array first, then additionalImages, then fallback to mainImage
+    if (product.images && Array.isArray(product.images) && product.images.length) {
+      const imgs = [...product.images];
+      while (imgs.length < 4) imgs.push('');
+      return imgs.slice(0, 4);
+    }
+    if (product.additionalImages && Array.isArray(product.additionalImages) && product.additionalImages.length) {
+      const imgs = [...product.additionalImages];
+      while (imgs.length < 4) imgs.push('');
+      return imgs.slice(0, 4);
+    }
+    if (product.mainImage) {
+      return [product.mainImage, '', '', ''];
+    }
+    return ['', '', '', ''];
+  };
+
   const [form, setForm] = useState({
-    title: '',
-    price: '',
-    description: '',
-    images: ['', '', '', ''],
-    sizes: [],
-    category: defaultCategory,
-    subCategory: defaultSubCategory,
-    ageGroup: 'Newborn' // default Shop by Age
+    title: product?.title || '',
+    price: product?.price || '',
+    discountPrice: product?.discountPrice || '',
+    description: product?.description || '',
+    sku: product?.sku || '',
+    images: getInitialImages(),
+    sizes: product?.sizes || [],
+    category: product?.category || defaultCategory,
+    subCategory: product?.subCategory || defaultSubCategory,
+    ageGroup: product?.ageGroup || 'Newborn'
   });
-  const [preview, setPreview] = useState('');
-  const router = useRouter();
+
+  const [preview, setPreview] = useState(product?.mainImage || product?.image || '');
   const { user: clientUser } = useAuth();
   const user = clientUser || serverUser;
   const toast = useToast();
@@ -46,7 +71,7 @@ export default function NewProduct({ serverUser }) {
       <div>
         <Header />
         <main className="container py-5">
-          <h1>Add Product</h1>
+          <h1>{isEditMode ? 'Edit Product' : 'Add Product'}</h1>
           <div className="alert alert-warning">Please login to access admin pages. <a href="/auth/login">Login</a></div>
         </main>
       </div>
@@ -58,8 +83,20 @@ export default function NewProduct({ serverUser }) {
       <div>
         <Header />
         <main className="container py-5">
-          <h1>Add Product</h1>
+          <h1>{isEditMode ? 'Edit Product' : 'Add Product'}</h1>
           <div className="alert alert-danger">User is not authorized to view this page.</div>
+        </main>
+      </div>
+    );
+  }
+
+  if (isEditMode && !product) {
+    return (
+      <div>
+        <Header />
+        <main className="container py-5">
+          <h1>Edit Product</h1>
+          <div className="alert alert-danger">Product not found.</div>
         </main>
       </div>
     );
@@ -116,6 +153,7 @@ export default function NewProduct({ serverUser }) {
       const productPayload = {
         title: form.title,
         price: Number(form.price) || 0,
+        discountPrice: form.discountPrice ? Number(form.discountPrice) : undefined,
         description: form.description,
         mainImage: main,
         additionalImages: imgs,
@@ -123,26 +161,31 @@ export default function NewProduct({ serverUser }) {
         sizes: Array.isArray(form.sizes) ? form.sizes : [],
         category: form.category || '',
         subCategory: form.subCategory || '',
-        ageGroup: form.ageGroup || 'Uncategorized', // new field
+        ageGroup: form.ageGroup || 'Uncategorized',
         // keep older field too for backward compatibility
         image: main
       };
 
-      const res = await fetch('/api/products', {
-        method: 'POST',
+      const url = isEditMode ? `/api/products/${product.id}` : '/api/products';
+      const method = isEditMode ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrf },
         credentials: 'same-origin',
-        body: JSON.stringify(productPayload),
+        body: JSON.stringify(isEditMode ? { ...productPayload, id: product.id } : productPayload),
       });
+
       if (!res.ok) {
         const data = await res.json().catch(()=>({}));
-        throw new Error(data.error || 'Create failed');
+        throw new Error(data.error || `${isEditMode ? 'Update' : 'Create'} failed`);
       }
+
       await res.json();
-      toast?.show({ type: 'success', message: 'Product created' });
+      toast?.show({ type: 'success', message: `Product ${isEditMode ? 'updated' : 'created'}` });
       router.push('/admin/products');
     } catch (err) {
-      toast?.show({ type: 'error', message: err.message || 'Create failed' });
+      toast?.show({ type: 'error', message: err.message || `${isEditMode ? 'Update' : 'Create'} failed` });
     } finally {
       setLoading(false);
     }
@@ -152,9 +195,14 @@ export default function NewProduct({ serverUser }) {
     <div>
       <Header />
       <main className="container py-4">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="h4 mb-0">{isEditMode ? 'Edit Product' : 'Add new product'}</h1>
+          <button className="btn btn-outline-secondary" onClick={() => router.push('/admin/products')}>
+            Back to Products
+          </button>
+        </div>
         <div className="row">
           <div className="col-lg-8">
-            <h1 className="h4 mb-3">Add new product</h1>
             <div className="card p-3 mb-4">
               <form onSubmit={submit}>
                 <div className="mb-3">
@@ -166,6 +214,10 @@ export default function NewProduct({ serverUser }) {
                   <div className="col">
                     <label className="form-label">Price</label>
                     <input className="form-control" value={form.price} onChange={(e)=>setForm({...form,price:e.target.value})} required />
+                  </div>
+                  <div className="col">
+                    <label className="form-label">Discount Price (optional)</label>
+                    <input className="form-control" value={form.discountPrice} onChange={(e)=>setForm({...form,discountPrice:e.target.value})} />
                   </div>
                 </div>
 
@@ -183,6 +235,18 @@ export default function NewProduct({ serverUser }) {
                               <span className="text-muted">Slot {i + 1} empty</span>
                             )}
                           </div>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm mb-2"
+                            placeholder="Image URL"
+                            value={src}
+                            onChange={(e) => {
+                              const next = Array.isArray(form.images) ? [...form.images] : ['', '', '', ''];
+                              next[i] = e.target.value;
+                              setForm({ ...form, images: next });
+                              setPreview(next.find((x) => x && x.trim()) || '');
+                            }}
+                          />
                           <input
                             type="file"
                             accept="image/*"
@@ -214,7 +278,7 @@ export default function NewProduct({ serverUser }) {
                       );
                     })}
                   </div>
-                  <div className="form-text">Use 1-4 images. Uploaded files are stored in blob and previewed above.</div>
+                  <div className="form-text">Use 1-4 images. Enter image URLs or upload files. Uploaded files are stored in blob storage.</div>
                   {uploading && <div className="form-text text-primary">Uploading... please wait.</div>}
                 </div>
 
@@ -304,7 +368,9 @@ export default function NewProduct({ serverUser }) {
                 </div>
 
                 <div className="d-flex gap-2">
-                  <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? 'Creating...' : 'Create product'}</button>
+                  <button className="btn btn-primary" type="submit" disabled={loading}>
+                    {loading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update product' : 'Create product')}
+                  </button>
                   <button type="button" className="btn btn-outline-secondary" onClick={() => router.push('/admin/products')}>Cancel</button>
                 </div>
               </form>
@@ -339,10 +405,23 @@ export default function NewProduct({ serverUser }) {
   );
 }
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req, query }) {
   const cookies = parseCookies(req);
   const token = cookies['token'];
   const payload = token ? verifyToken(token) : null;
   const serverUser = payload ? { id: payload.sub, role: payload.role, name: payload.name || null } : null;
-  return { props: { serverUser } };
+
+  let product = null;
+  if (query.id) {
+    try {
+      const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/products/${query.id}`);
+      if (res.ok) {
+        product = await res.json();
+      }
+    } catch (err) {
+      console.error('Failed to fetch product:', err);
+    }
+  }
+
+  return { props: { serverUser, product } };
 }

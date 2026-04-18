@@ -44,10 +44,10 @@ export default function AdminProducts({ serverUser }) {
     );
   }
 
-  // filter state
-  const [category, setCategory] = useState(() => (navHeader && navHeader[0] ? navHeader[0].title : ''));
+  // filter state - start with no filters to show all products
+  const [category, setCategory] = useState('');
   const currentCatObj = useMemo(() => navHeader.find(c => c.title === category) || null, [category]);
-  const [subCategory, setSubCategory] = useState(() => (currentCatObj && currentCatObj.items && currentCatObj.items[0] ? currentCatObj.items[0].label : ''));
+  const [subCategory, setSubCategory] = useState('');
   const [ageGroup, setAgeGroup] = useState(''); // '' = all
 
   // derived subOptions
@@ -92,6 +92,7 @@ export default function AdminProducts({ serverUser }) {
           <div className="d-flex align-items-center gap-2">
             {/* category / subcategory / age filters */}
             <select className="form-select form-select-sm me-2" style={{width:160}} value={category} onChange={(e) => { setCategory(e.target.value); const cat = navHeader.find(c=>c.title===e.target.value); setSubCategory(cat && cat.items && cat.items[0] ? cat.items[0].label : ''); }}>
+              <option value=''>All Categories</option>
               {navHeader.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
             </select>
 
@@ -129,6 +130,9 @@ export default function AdminProducts({ serverUser }) {
                   <div className="mt-auto d-flex gap-2">
                     <Link href={`/product/${p.id || p._id}`} legacyBehavior>
                       <a className="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
+                    </Link>
+                    <Link href={`/admin/products/new?id=${p.id || p._id}`} legacyBehavior>
+                      <a className="btn btn-sm btn-warning">Edit</a>
                     </Link>
                     <button className="btn btn-sm btn-danger" onClick={() => handleDelete(p.id)}>Delete</button>
                   </div>
