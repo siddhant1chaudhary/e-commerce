@@ -103,7 +103,7 @@ export default function AdminDashboard({ serverUser }) {
 						</div>
 					</div>
 
-					<div className="col-sm-6 col-md-3">
+					{/* <div className="col-sm-6 col-md-3">
 						<div className="card p-3 h-100">
 							<div className="small text-muted">Recent adds</div>
 							<div className="h5 fw-bold">{recent.length}</div>
@@ -118,7 +118,7 @@ export default function AdminDashboard({ serverUser }) {
 								<button className="btn btn-sm btn-outline-secondary" onClick={() => toast?.show({ type: 'info', message: 'Not implemented' })}>Settings</button>
 							</div>
 						</div>
-					</div>
+					</div> */}
 
 					<div className="col-sm-6 col-md-3">
 						<div className="card p-3 h-100">

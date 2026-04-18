@@ -47,7 +47,7 @@ export default function Footer() {
             <div className="mt-4">
               <h6 className="text-uppercase fw-bold small">Keep in touch</h6>
               <div className="d-flex gap-2 mt-2">
-                <a href="#" className="social-icon" aria-label="facebook">
+                {/* <a href="#" className="social-icon" aria-label="facebook">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="#6c757d"><path d="M22 12.07C22 6.55 17.52 2 12 2S2 6.55 2 12.07C2 17.1 5.66 21.23 10.44 22v-7.03H7.9v-2.9h2.54V9.41c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.45h-1.25c-1.23 0-1.61.77-1.61 1.56v1.88h2.74l-.44 2.9h-2.3V22C18.34 21.23 22 17.1 22 12.07z"/></svg>
                 </a>
                 <a href="#" className="social-icon" aria-label="twitter">
@@ -55,8 +55,8 @@ export default function Footer() {
                 </a>
                 <a href="#" className="social-icon" aria-label="youtube">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="#6c757d"><path d="M23.5 6.2s-.2-1.6-.82-2.3c-.78-.82-1.66-.82-2.06-.86C16.9 2.6 12 2.6 12 2.6h-.02s-4.9 0-8.6.45c-.4.04-1.28.04-2.06.86C.7 4.6.5 6.2.5 6.2S.18 8 .18 9.8v.4C.18 12 .18 13.8.18 13.8s.2 1.6.82 2.3c.78.82 1.8.79 2.26.88 1.64.22 6.98.4 6.98.4s4.9-.02 8.6-.45c.4-.04 1.28-.04 2.06-.86.62-.68.82-2.3.82-2.3s.32-1.8.32-3.6v-.4c0-1.8-.32-3.6-.32-3.6zM9.75 14.02V7.98l5.2 3.02-5.2 3.02z"/></svg>
-                </a>
-                <a href="#" className="social-icon" aria-label="instagram">
+                </a> */}
+                <a href="https://www.instagram.com/timtomcollection?igsh=Y3l6ZWFmdzkyYWRp" target='_blank' className="social-icon" aria-label="instagram">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="#6c757d"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6.2A3.8 3.8 0 1 0 15.8 12 3.8 3.8 0 0 0 12 8.2zM18.4 5.6a1.12 1.12 0 1 0 1.12 1.12A1.12 1.12 0 0 0 18.4 5.6z"/></svg>
                 </a>
               </div>
