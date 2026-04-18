@@ -2,7 +2,7 @@ import Header from '../components/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/Profile.module.css';
 import { useAuth } from '../components/AuthProvider';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { parseCookies, verifyToken } from '../lib/auth';
@@ -29,10 +29,9 @@ export default function Profile({ serverUser }) {
   const [profileForm, setProfileForm] = useState({ name: '', email: '' });
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // New address (auto-save)
+  // New address
   const [newAddress, setNewAddress] = useState({ name: '', phone: '', address: '' });
-  const [autoSavingNewAddress, setAutoSavingNewAddress] = useState(false);
-  const newAddressTimerRef = useRef(null);
+  const [savingNewAddress, setSavingNewAddress] = useState(false);
 
   // Existing address editing
   const [editingAddressId, setEditingAddressId] = useState(null);
@@ -58,45 +57,39 @@ export default function Profile({ serverUser }) {
     return addresses.find(a => a.isDefault) || addresses[0] || null;
   }, [addresses]);
 
-  useEffect(() => {
-    if (autoSavingNewAddress) return;
+  async function saveNewAddress() {
     const name = newAddress.name?.trim() || '';
     const phone = newAddress.phone?.trim() || '';
     const address = newAddress.address?.trim() || '';
 
-    const ready = name && phone && address;
-    if (!ready) return;
+    if (!name || !phone || !address) {
+      toast?.show({ type: 'error', message: 'Please fill in all address fields' });
+      return;
+    }
 
-    if (newAddressTimerRef.current) clearTimeout(newAddressTimerRef.current);
+    setSavingNewAddress(true);
+    try {
+      const res = await fetch('/api/users/addresses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ name, phone, address })
+      });
 
-    newAddressTimerRef.current = setTimeout(async () => {
-      setAutoSavingNewAddress(true);
-      try {
-        const res = await fetch('/api/users/addresses', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'same-origin',
-          body: JSON.stringify({ name, phone, address })
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || 'Failed to save address');
-        }
-
-        setNewAddress({ name: '', phone: '', address: '' });
-        await addressesMutate();
-        toast?.show({ type: 'success', message: 'Address saved' });
-      } catch (err) {
-        toast?.show({ type: 'error', message: err.message || 'Failed to save address' });
-      } finally {
-        setAutoSavingNewAddress(false);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to save address');
       }
-    }, 900);
 
-    return () => {
-      if (newAddressTimerRef.current) clearTimeout(newAddressTimerRef.current);
-    };
-  }, [newAddress, autoSavingNewAddress, addressesMutate, toast]);
+      setNewAddress({ name: '', phone: '', address: '' });
+      await addressesMutate();
+      toast?.show({ type: 'success', message: 'Address saved' });
+    } catch (err) {
+      toast?.show({ type: 'error', message: err.message || 'Failed to save address' });
+    } finally {
+      setSavingNewAddress(false);
+    }
+  }
 
   async function saveProfile(e) {
     e.preventDefault();
@@ -275,13 +268,7 @@ export default function Profile({ serverUser }) {
                     </div>
                     <div className="mb-3">
                       <label className="form-label small text-muted">Email</label>
-                      <input
-                        className="form-control"
-                        value={profileForm.email}
-                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                        type="email"
-                        required
-                      />
+                      <p className="card-text">{email}</p>
                     </div>
                     <div className="d-flex gap-2">
                       <button className="btn btn-primary" disabled={savingProfile} type="submit">
@@ -320,13 +307,13 @@ export default function Profile({ serverUser }) {
                           <div className="card shadow-sm">
                             <div className="card-body">
                               <div className="d-flex justify-content-between align-items-start">
-                                <div>
+                                <div className='col-7'>
                                   <div className="fw-semibold">{addr.name || 'Address'}</div>
                                   <div className="small text-muted">{addr.phone || ''}</div>
                                   <div className="mt-2">{addr.address || '-'}</div>
                                   {isDefault && <span className="badge bg-success mt-2">Default</span>}
                                 </div>
-                                <div className="text-end">
+                                <div className="d-flex flex-nowrap justify-content-end gap-2 text-end">
                                   {!isEditing ? (
                                     <>
                                       <button
@@ -401,7 +388,7 @@ export default function Profile({ serverUser }) {
                   </div>
                 )}
 
-                <h6 className="mt-4 mb-3">Add New Address (Auto-save)</h6>
+                <h6 className="mt-4 mb-3">Add New Address</h6>
                 <div className="card shadow-sm">
                   <div className="card-body">
                     <div className="row g-3">
@@ -431,8 +418,18 @@ export default function Profile({ serverUser }) {
                       </div>
                     </div>
 
-                    <div className="small text-muted mt-2">
-                      {autoSavingNewAddress ? 'Saving...' : 'When all fields are filled, the address will be saved automatically.'}
+                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mt-3">
+                      <div className="small text-muted">
+                        Enter all address fields and click Save Address.
+                      </div>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        type="button"
+                        disabled={savingNewAddress}
+                        onClick={saveNewAddress}
+                      >
+                        {savingNewAddress ? 'Saving...' : 'Save Address'}
+                      </button>
                     </div>
                   </div>
                 </div>

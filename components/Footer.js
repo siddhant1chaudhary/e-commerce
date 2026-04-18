@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { useToast } from './ToastProvider';
 
 export default function Footer() {
+  const toast = useToast();
   return (
     <footer className="site-footer bg-light border-top mt-5">
       <div className="container py-5">
@@ -34,10 +36,10 @@ export default function Footer() {
           <div className="col-12 col-md-4">
             <h6 className="text-uppercase fw-bold small">Experience App on Mobile</h6>
             <div className="d-flex align-items-center gap-2 mt-3">
-              <a href="#" aria-label="Google Play" className="d-inline-block">
+              <a href="#" aria-label="Google Play" className="d-inline-block" onClick={(e) => { e.preventDefault(); toast.show({ message: 'Coming soon!' }); }}>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style={{height:42}} />
               </a>
-              <a href="#" aria-label="App Store" className="d-inline-block">
+              <a href="#" aria-label="App Store" className="d-inline-block"  onClick={(e) => { e.preventDefault(); toast.show({ message: 'Coming soon!' }); }}>
                 <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="App Store" style={{height:42}} />
               </a>
             </div>
