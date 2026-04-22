@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { parseCookies, verifyToken, verifyCsrf } from '../../../lib/auth';
+import { sendOrderNotificationEmails } from '../../../lib/sendOrderEmails';
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB;
@@ -97,6 +98,27 @@ export default async function handler(req, res) {
 
     await ordersCollection.insertOne(order);
     await cartsCollection.updateOne({ id: cart.id }, { $set: { items: [] } });
+
+    let customerEmail = typeof shipping?.email === 'string' ? shipping.email.trim() : '';
+    let customerName = (typeof shipping?.name === 'string' && shipping.name.trim()) || '';
+    if (userId) {
+      const u = await db.collection('users').findOne({ id: String(userId) });
+      if (u) {
+        if (!customerEmail && u.email) customerEmail = String(u.email).trim();
+        if (!customerName && u.name) customerName = String(u.name).trim();
+      }
+    }
+    try {
+      await sendOrderNotificationEmails({
+        order,
+        customerEmail: customerEmail || null,
+        customerName,
+        shipping: order.shipping,
+        userId: userId || null,
+      });
+    } catch (e) {
+      console.error('[checkout] order notification emails:', e);
+    }
 
     return res.status(201).json({ ok: true, orderId: order.id, order });
   } catch (err) {

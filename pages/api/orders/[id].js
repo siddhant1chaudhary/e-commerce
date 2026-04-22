@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { parseCookies, verifyToken } from '../../../lib/auth';
+import { sendOrderCanceledEmails, resolveOrderCustomerEmail } from '../../../lib/sendOrderEmails';
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB;
@@ -68,6 +69,25 @@ export default async function handler(req, res) {
 
       const updatedOrder = await ordersCollection.findOne({ id });
       console.log('Updated Order:', updatedOrder); // Log the updated order for debugging
+
+      if (status === 'canceled' && updatedOrder) {
+        try {
+          const { customerEmail, customerName } = await resolveOrderCustomerEmail(
+            db,
+            updatedOrder
+          );
+          await sendOrderCanceledEmails({
+            order: updatedOrder,
+            canceledBy: updatedOrder.canceledBy || canceledBy || { role: 'user', name: 'User' },
+            customerEmail,
+            customerName,
+            userId: updatedOrder.userId || null,
+          });
+        } catch (e) {
+          console.error('[orders/id] cancel notification emails:', e);
+        }
+      }
+
       res.status(200).json({
         ...updatedOrder,
         _id: updatedOrder._id.toString(), // Convert ObjectId to string

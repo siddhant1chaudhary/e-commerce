@@ -18,8 +18,9 @@ export default function CheckoutPage() {
   const [applying, setApplying] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [couponResult, setCouponResult] = useState(null);
-  const [shipping, setShipping] = useState({ name: '', phone: '', address: '' });
+  const [shipping, setShipping] = useState({ name: '', phone: '', address: '', email: '' });
   const [profileName, setProfileName] = useState('');
+  const [profileEmail, setProfileEmail] = useState('');
   const [addresses, setAddresses] = useState(null);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
@@ -32,8 +33,18 @@ export default function CheckoutPage() {
     if (!user) return;
     fetch('/api/users/profile', { credentials: 'same-origin' })
       .then((r) => r.json())
-      .then((d) => setProfileName(d?.name || ''))
-      .catch(() => setProfileName(''));
+      .then((d) => {
+        setProfileName(d?.name || '');
+        setProfileEmail(d?.email || '');
+        setShipping((prev) => ({
+          ...prev,
+          email: (prev.email || '').trim() ? prev.email : d?.email || '',
+        }));
+      })
+      .catch(() => {
+        setProfileName('');
+        setProfileEmail('');
+      });
   }, [user]);
 
   useEffect(() => {
@@ -48,11 +59,12 @@ export default function CheckoutPage() {
         if (def) {
           setSelectedAddressId(def.id);
           // Full name should come from profile; address provides phone + address.
-          setShipping({
+          setShipping((prev) => ({
             name: profileName || (def.name || ''),
             phone: def.phone || '',
-            address: def.address || ''
-          });
+            address: def.address || '',
+            email: (prev.email || '').trim() ? prev.email : profileEmail || '',
+          }));
         }
       })
       .catch(() => setAddresses([]));
@@ -62,8 +74,13 @@ export default function CheckoutPage() {
     if (!user || !Array.isArray(addresses) || !selectedAddressId) return;
     const sel = addresses.find(a => a.id === selectedAddressId);
     if (!sel) return;
-    setShipping({ name: profileName || sel.name || '', phone: sel.phone || '', address: sel.address || '' });
-  }, [user, addresses, selectedAddressId]);
+    setShipping((prev) => ({
+      name: profileName || sel.name || '',
+      phone: sel.phone || '',
+      address: sel.address || '',
+      email: (prev.email || '').trim() ? prev.email : profileEmail || prev.email || '',
+    }));
+  }, [user, addresses, selectedAddressId, profileName, profileEmail]);
 
   useEffect(() => {
     if (!user || !Array.isArray(addresses) || !selectedAddressId) return;
@@ -72,6 +89,15 @@ export default function CheckoutPage() {
     if (!sel) return;
     setShipping((prev) => ({ ...prev, name: profileName }));
   }, [profileName, user, addresses, selectedAddressId]);
+
+  useEffect(() => {
+    if (!user || !profileEmail) return;
+    setShipping((prev) =>
+      (prev.email || '').trim()
+        ? prev
+        : { ...prev, email: profileEmail }
+    );
+  }, [user, profileEmail]);
 
   useEffect(() => {
     // ensure we have latest cart on mount
@@ -112,14 +138,28 @@ export default function CheckoutPage() {
       toast?.show({ type: 'error', message: 'Cart is empty' }); return;
     }
     // determine shipping to use: selected saved address for logged-in user, otherwise form
-    let finalShipping = shipping;
+    let finalShipping = { ...shipping };
     if (user && selectedAddressId && Array.isArray(addresses)) {
-      const sel = addresses.find(a => a.id === selectedAddressId);
-      if (sel) finalShipping = { name: profileName || shipping.name, phone: sel.phone, address: sel.address };
+      const sel = addresses.find((a) => a.id === selectedAddressId);
+      if (sel) {
+        finalShipping = {
+          name: profileName || shipping.name,
+          phone: sel.phone,
+          address: sel.address,
+          email: (shipping.email || profileEmail || '').trim(),
+        };
+      }
     }
     if (!finalShipping.name || !finalShipping.phone || !finalShipping.address) {
-      toast?.show({ type: 'error', message: 'Please fill shipping details' }); return;
+      toast?.show({ type: 'error', message: 'Please fill shipping details' });
+      return;
     }
+    const em = (finalShipping.email || profileEmail || '').trim();
+    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+      toast?.show({ type: 'error', message: 'Please enter a valid email for order updates' });
+      return;
+    }
+    finalShipping = { ...finalShipping, email: em };
 
     // Save checkout payload to sessionStorage so payment page can access it
     try {
@@ -160,7 +200,7 @@ export default function CheckoutPage() {
                         setSelectedAddressId(null);
                         setAddingNew(true);
                         // Clear only address fields; keep fullname from profile.
-                        setShipping((prev) => ({ ...prev, phone: '', address: '' }));
+                        setShipping((prev) => ({ ...prev, phone: '', address: '', email: prev.email || profileEmail || '' }));
                         return;
                       }
                       setAddingNew(false);
@@ -184,6 +224,17 @@ export default function CheckoutPage() {
               <div className="mb-2">
                 <label className="form-label small">Phone</label>
                 <input className="form-control" value={shipping.phone} onChange={(e)=>setShipping({...shipping,phone:e.target.value})} />
+              </div>
+              <div className="mb-2">
+                <label className="form-label small">Email</label>
+                <input
+                  className="form-control"
+                  type="email"
+                  autoComplete="email"
+                  placeholder={user ? 'For order confirmation' : 'Required for order confirmation'}
+                  value={shipping.email}
+                  onChange={(e) => setShipping({ ...shipping, email: e.target.value })}
+                />
               </div>
               <div className="mb-2">
                 <label className="form-label small">Address</label>

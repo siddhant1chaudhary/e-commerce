@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { parseCookies, verifyToken } from '../../../lib/auth';
+import { sendOrderCanceledEmails, resolveOrderCustomerEmail } from '../../../lib/sendOrderEmails';
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB;
@@ -70,6 +71,29 @@ export default async function handler(req, res) {
       const result = await ordersCollection.updateOne({ id }, { $set: updateFields });
       if (result.modifiedCount === 0) {
         return res.status(404).json({ error: 'Order not found' });
+      }
+
+      if (status === 'canceled') {
+        const updatedOrder = await ordersCollection.findOne({ id });
+        if (updatedOrder) {
+          try {
+            const { customerEmail, customerName } = await resolveOrderCustomerEmail(
+              db,
+              updatedOrder
+            );
+            await sendOrderCanceledEmails({
+              order: updatedOrder,
+              canceledBy:
+                updatedOrder.canceledBy ||
+                (canceledBy ? canceledBy : { role: 'admin', name: 'Admin' }),
+              customerEmail,
+              customerName,
+              userId: updatedOrder.userId || null,
+            });
+          } catch (e) {
+            console.error('[orders/admin] cancel notification emails:', e);
+          }
+        }
       }
 
       return res.status(200).json({ ok: true });
