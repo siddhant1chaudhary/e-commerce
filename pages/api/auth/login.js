@@ -35,6 +35,10 @@ export default async function handler(req, res) {
 
 	if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
 
+	// Track last active for admin user directory / analytics
+	const lastActiveAt = new Date().toISOString();
+	updatedUser = await updateUserById(updatedUser.id, { lastActiveAt });
+
 	// create token and csrf
 	const token = signToken({ sub: updatedUser.id, role: updatedUser.role || 'user' });
 	const csrf = generateCsrfToken();

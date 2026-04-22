@@ -48,12 +48,15 @@ export default async function handler(req, res) {
 			return res.status(409).json({ error: 'User already exists' });
 		}
 
+		const now = new Date().toISOString();
 		const userDoc = {
 			id: Date.now().toString(),
 			name: pending.name || '',
 			email: normalizedEmail,
 			password: pending.passwordHash,
-			role: 'user'
+			role: 'user',
+			createdAt: now,
+			lastActiveAt: now
 		};
 
 		await usersCollection.insertOne(userDoc);

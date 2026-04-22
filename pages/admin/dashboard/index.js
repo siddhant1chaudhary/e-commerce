@@ -121,10 +121,13 @@ export default function AdminDashboard({ serverUser }) {
 					</div> */}
 
 					<div className="col-sm-6 col-md-3">
-						<div className="card p-3 h-100">
-							<div className="small text-muted">Total users</div>
-							<div className="h5 fw-bold">{totalUsers}</div>
-						</div>
+						<Link href="/admin/users" className="text-decoration-none text-reset d-block h-100">
+							<div className="card p-3 h-100 shadow-sm user-select-none" style={{ cursor: 'pointer' }} title="View all users">
+								<div className="small text-muted">Total users</div>
+								<div className="h5 fw-bold">{totalUsers}</div>
+								<div className="small text-primary mt-1">View all →</div>
+							</div>
+						</Link>
 					</div>
 				</div>
 
