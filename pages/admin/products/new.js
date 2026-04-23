@@ -405,6 +405,21 @@ export default function ProductForm({ serverUser, product }) {
   );
 }
 
+/** Base URL for server-side fetch to this app (avoids hardcoded localhost in production; local still uses request Host). */
+function getServerSideOrigin(req) {
+  const host = req?.headers?.host;
+  if (host) {
+    const xfp = req.headers['x-forwarded-proto'];
+    const proto =
+      (xfp && String(xfp).split(',')[0].trim()) ||
+      (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
+    return `${proto}://${host}`;
+  }
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.NEXTAUTH_URL) return String(process.env.NEXTAUTH_URL).replace(/\/$/, '');
+  return 'http://localhost:3000';
+}
+
 export async function getServerSideProps({ req, query }) {
   const cookies = parseCookies(req);
   const token = cookies['token'];
@@ -414,7 +429,8 @@ export async function getServerSideProps({ req, query }) {
   let product = null;
   if (query.id) {
     try {
-      const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/products/${query.id}`);
+      const origin = getServerSideOrigin(req);
+      const res = await fetch(`${origin}/api/products/${encodeURIComponent(String(query.id))}`);
       if (res.ok) {
         product = await res.json();
       }
