@@ -124,6 +124,21 @@ export default function Header({ navConfig }) {
                       Hi, {user.name || 'User'}
                     </button>
                     <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      {user?.role === 'admin' && (
+                        <>
+                          <li>
+                            <Link href="/admin/dashboard" legacyBehavior>
+                              <a className="dropdown-item">Admin Dashboard</a>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/admin/print-tags" legacyBehavior>
+                              <a className="dropdown-item">Print Tags</a>
+                            </Link>
+                          </li>
+                          <li><hr className="dropdown-divider" /></li>
+                        </>
+                      )}
                       <li>
                         <Link href="/profile" legacyBehavior>
                           <a className="dropdown-item">My Profile</a>
