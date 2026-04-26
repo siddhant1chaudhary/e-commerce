@@ -11,7 +11,8 @@ function normalizeTemplate(t = {}) {
     id,
     name: String(t.name || 'Template').trim(),
     type: t.type === 'sale' ? 'sale' : 'regular',
-    size: t.size === '2x3' ? '2x3' : t.size === 'custom' ? 'custom' : '2x2',
+    size:
+      t.size === '2x3' ? '2x3' : t.size === '2x1' ? '2x1' : t.size === 'custom' ? 'custom' : '2x2',
     customW: t.customW ? Number(t.customW) : 2,
     customH: t.customH ? Number(t.customH) : 2,
     showBarcode: t.showBarcode !== false,

@@ -5,6 +5,7 @@ import { parseCookies, verifyToken } from '../../lib/auth';
 import navHeader from '../../data/navHeader.json';
 import ThermalTagLabel from '../../components/admin/ThermalTagLabel';
 import { useToast } from '../../components/ToastProvider';
+import { resolveLabelDimsIn } from '../../lib/printLabelDims';
 
 const fetcher = (url) => fetch(url, { credentials: 'same-origin' }).then((r) => r.json());
 
@@ -39,7 +40,7 @@ export default function AdminPrintTags({ serverUser }) {
 
   const [selected, setSelected] = useState(() => new Map()); // id -> { product, variant, copies, template }
 
-  const [labelSize, setLabelSize] = useState('2x2'); // 2x2 | 2x3 | custom
+  const [labelSize, setLabelSize] = useState('2x1'); // 2x1 | 2x2 | 2x3 | custom
   const [orientation, setOrientation] = useState('portrait'); // portrait | landscape
   const [customW, setCustomW] = useState(2);
   const [customH, setCustomH] = useState(2);
@@ -52,6 +53,26 @@ export default function AdminPrintTags({ serverUser }) {
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
 
   const printAreaRef = useRef(null);
+
+  useEffect(() => {
+    if (labelSize === '2x1' && orientation !== 'portrait') {
+      setOrientation('portrait');
+    }
+  }, [labelSize, orientation]);
+
+  useEffect(() => {
+    const d = resolveLabelDimsIn({ labelSize, orientation, customW, customH });
+    let el = document.getElementById('tt-admin-print-page');
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'tt-admin-print-page';
+      document.head.appendChild(el);
+    }
+    el.textContent = `@media print { @page { size: ${d.w}in ${d.h}in; margin: 0; } }`;
+    return () => {
+      if (el) el.textContent = '';
+    };
+  }, [labelSize, orientation, customW, customH]);
 
   if (!user) {
     return (
@@ -152,7 +173,22 @@ export default function AdminPrintTags({ serverUser }) {
       toast?.show({ type: 'info', message: 'Select at least 1 product to print.' });
       return;
     }
-    // For browser print, we rely on print CSS + the print area being visible.
+    // Browsers add date, URL, and page numbers in the print *margin* (not our HTML) when
+    // "Headers and footers" is on. Clearing the document title reduces the title string
+    // in the header; users should still turn off headers/footers in the print dialog.
+    const prevTitle = document.title;
+    document.title = '\u200b';
+
+    const restore = () => {
+      document.title = prevTitle;
+    };
+    const fallback = setTimeout(restore, 12_000);
+    const onAfterPrint = () => {
+      clearTimeout(fallback);
+      window.removeEventListener('afterprint', onAfterPrint);
+      restore();
+    };
+    window.addEventListener('afterprint', onAfterPrint, { once: true });
     window.print();
   }
 
@@ -202,23 +238,7 @@ export default function AdminPrintTags({ serverUser }) {
         return;
       }
 
-      const resolveDimsIn = () => {
-        let w = 2;
-        let h = 2;
-        if (labelSize === '2x3') {
-          w = 2;
-          h = 3;
-        } else if (labelSize === 'custom') {
-          const ww = Number(customW);
-          const hh = Number(customH);
-          if (Number.isFinite(ww) && ww > 0) w = ww;
-          if (Number.isFinite(hh) && hh > 0) h = hh;
-        }
-        if (orientation === 'landscape') return { w: h, h: w };
-        return { w, h };
-      };
-
-      const dims = resolveDimsIn();
+      const dims = resolveLabelDimsIn({ labelSize, orientation, customW, customH });
       const pdf = new jsPDF({
         unit: 'in',
         format: [dims.w, dims.h],
@@ -227,6 +247,8 @@ export default function AdminPrintTags({ serverUser }) {
 
       for (let i = 0; i < labels.length; i++) {
         const el = labels[i];
+        // Let JsBarcode / QR finish painting into the DOM before capture
+        await new Promise((r) => setTimeout(r, 350));
 
         // html2canvas needs a white background for thermal-like output
         const canvas = await html2canvas(el, {
@@ -261,7 +283,7 @@ export default function AdminPrintTags({ serverUser }) {
   function applyTemplate(t) {
     if (!t) return;
     setTemplate(t.type || 'regular');
-    setLabelSize(t.size || '2x2');
+    setLabelSize(t.size && ['2x1', '2x2', '2x3', 'custom'].includes(t.size) ? t.size : '2x1');
     setCustomW(t.customW ?? 2);
     setCustomH(t.customH ?? 2);
     setShowBarcode(t.showBarcode !== false);
@@ -562,12 +584,31 @@ export default function AdminPrintTags({ serverUser }) {
                 </div>
 
                 <div className="col-6">
-                  <label className="form-label small">Label size</label>
-                  <select className="form-select form-select-sm" value={labelSize} onChange={(e) => setLabelSize(e.target.value)}>
-                    <option value="2x2">2 × 2 inch</option>
-                    <option value="2x3">2 × 3 inch</option>
-                    <option value="custom">Custom</option>
+                  <label className="form-label small" htmlFor="tt-label-size">
+                    Label size
+                  </label>
+                  <select
+                    id="tt-label-size"
+                    className="form-select form-select-sm"
+                    value={labelSize}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setLabelSize(v);
+                      if (v === '2x1') setOrientation('portrait');
+                    }}
+                  >
+                    <optgroup label="2 x 1 (thermal, wide)">
+                      <option value="2x1">2 x 1 inch (2in wide, 1in tall)</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                      <option value="2x2">2 x 2 inch</option>
+                      <option value="2x3">2 x 3 inch</option>
+                      <option value="custom">Custom (W / H below)</option>
+                    </optgroup>
                   </select>
+                  <div className="form-text text-muted" style={{ fontSize: '0.75rem' }}>
+                    2x1: text and barcode in one horizontal row. Custom 2 and 1 works the same.
+                  </div>
                 </div>
                 <div className="col-6">
                   <label className="form-label small">Orientation</label>
@@ -575,6 +616,8 @@ export default function AdminPrintTags({ serverUser }) {
                     className="form-select form-select-sm"
                     value={orientation}
                     onChange={(e) => setOrientation(e.target.value)}
+                    disabled={labelSize === '2x1'}
+                    title={labelSize === '2x1' ? '2x1 is fixed at 2in x 1in (wide). Use Custom 2x1 for same.' : undefined}
                   >
                     <option value="portrait">Portrait</option>
                     <option value="landscape">Landscape</option>
@@ -652,6 +695,12 @@ export default function AdminPrintTags({ serverUser }) {
                   ZPL
                 </button>
               </div>
+              <p className="text-muted small mt-2 mb-0">
+                <strong>Clean print (no date/URL in margins):</strong> In the browser print window, open{' '}
+                <em>More settings</em> and <strong>uncheck &quot;Headers and footers&quot;</strong> (Chrome/Edge)
+                or disable <strong>Header and footer</strong> (Firefox). This is required to remove the site URL
+                and page numbers; PDF export is already clean.
+              </p>
 
               <div className="text-muted small mt-2">
                 Selected: <strong>{selectedList.length}</strong> products • Labels: <strong>{printQueue.length}</strong>
@@ -661,18 +710,21 @@ export default function AdminPrintTags({ serverUser }) {
             <div className="card p-3 mt-3">
               <div className="fw-semibold mb-2">Preview</div>
               {selectedList.length ? (
-                <ThermalTagLabel
-                  product={selectedList[0].product}
-                  template={template}
-                  size={labelSize}
-                  orientation={orientation}
-                  customWidthIn={customW}
-                  customHeightIn={customH}
-                  variant={selectedList[0].variant}
-                  showQr={showQr}
-                  showBarcode={showBarcode}
-                  washCareText={washCareText}
-                />
+                <div className="tt-preview-surface tt-no-print">
+                  <ThermalTagLabel
+                    key={`${labelSize}-${customW}x${customH}-${orientation}`}
+                    product={selectedList[0].product}
+                    template={template}
+                    size={labelSize}
+                    orientation={orientation}
+                    customWidthIn={customW}
+                    customHeightIn={customH}
+                    variant={selectedList[0].variant}
+                    showQr={showQr}
+                    showBarcode={showBarcode}
+                    washCareText={washCareText}
+                  />
+                </div>
               ) : (
                 <div className="text-muted small">Select a product to preview its label.</div>
               )}
