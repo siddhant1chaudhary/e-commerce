@@ -120,13 +120,16 @@ export default function ThermalTagLabel({
     };
   }, [showBarcode, showQr, sku, compact, rowLayout, rowDualCode]);
 
-  const variantText = [variant?.size ? `Size: ${variant.size}` : '', variant?.color ? `Color: ${variant.color}` : '']
-    .filter(Boolean)
-    .join('  ');
-
-  const detailLine = [sku ? `SKU ${sku}` : null, variantText || null, fabric ? `Fab: ${fabric}` : null]
-    .filter(Boolean)
-    .join(' \u00b7 ');
+  const detailBlock = (
+    <>
+      {sku ? <div className="tt-sku">SKU: {sku}</div> : null}
+      {variant?.size ? <div className="tt-size">Size: {variant.size}</div> : null}
+      {variant?.color ? <div className="tt-color">Color: {variant.color}</div> : null}
+      {fabric ? <div className="tt-fabric">Fabric: {fabric}</div> : null}
+    </>
+  );
+  const hasRowDetails = sku || variant?.size || variant?.color || fabric;
+  const washCareBlock = washCare ? <div className="tt-washcare">{washCare}</div> : null;
 
   return (
     <div
@@ -156,11 +159,14 @@ export default function ThermalTagLabel({
               <div className="tt-row-title" title={title}>
                 {title}
               </div>
-              <div className={detailLine ? 'tt-row-line2' : 'tt-row-line2 tt-row-line2--priceonly'}>
-                {detailLine ? <span className="tt-inline-detail">{detailLine}</span> : null}
+              {hasRowDetails ? <div className="tt-row-details">{detailBlock}</div> : null}
+              <div
+                className={hasRowDetails ? 'tt-row-line2' : 'tt-row-line2 tt-row-line2--priceonly'}
+              >
                 <span className="tt-price">MRP ₹{Number.isFinite(mrp) ? mrp : 0}</span>
               </div>
               <InstagramTag className="tt-row-ig" />
+              {washCare ? <div className="tt-washcare tt-washcare--row">{washCare}</div> : null}
             </div>
             <div
               className={`tt-row-code ${rowDualCode ? 'tt-row-code--both' : ''}`}
@@ -181,7 +187,8 @@ export default function ThermalTagLabel({
             </div>
             <div className="tt-meta">
               <div className="tt-sku">SKU: {sku || '—'}</div>
-              {variantText ? <div className="tt-variant">{variantText}</div> : null}
+              {variant?.size ? <div className="tt-size">Size: {variant.size}</div> : null}
+              {variant?.color ? <div className="tt-color">Color: {variant.color}</div> : null}
               {fabric ? <div className="tt-fabric">Fabric: {fabric}</div> : null}
             </div>
             <div className="tt-bottom">
@@ -191,7 +198,7 @@ export default function ThermalTagLabel({
                 {showQr ? <canvas ref={qrRef} className="tt-qr" /> : null}
               </div>
               <InstagramTag className="tt-instagram" />
-              {washCare ? <div className="tt-washcare">{washCare}</div> : null}
+              {washCareBlock}
             </div>
           </>
         )}
