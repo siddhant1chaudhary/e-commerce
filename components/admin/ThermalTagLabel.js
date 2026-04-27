@@ -12,6 +12,12 @@ function InstagramTag({ className = '' }) {
         />
       </svg>
       <span className="tt-ig-id">@timtomcollection</span>
+      <svg className="tt-ig-icon" viewBox="0 0 24 24" aria-hidden focusable="false">
+      <path
+        fill="currentColor"
+        d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm6 10a7.8 7.8 0 0 1-.1 1h-3a15 15 0 0 0 0-2h3a7.8 7.8 0 0 1 .1 1ZM12 4.3c.8 1 1.5 3 1.7 5.7h-3.4c.2-2.7.9-4.7 1.7-5.7ZM6.1 11h3a15 15 0 0 0 0 2h-3a7.8 7.8 0 0 1 0-2Zm.6-2A8 8 0 0 1 9.2 5.7 12 12 0 0 0 8 10H6.7Zm2.5 9.3A8 8 0 0 1 6.7 15H8a12 12 0 0 0 1.2 3.3ZM12 19.7c-.8-1-1.5-3-1.7-5.7h3.4c-.2 2.7-.9 4.7-1.7 5.7Zm2.8-1.4A12 12 0 0 0 16 14h1.3a8 8 0 0 1-2.5 4.3ZM16 10a12 12 0 0 0-1.2-4.3A8 8 0 0 1 17.3 10Z"
+      />
+     </svg>
       <div className="tt-ig-id">www.timtom.in</div>
     </div>
   );
