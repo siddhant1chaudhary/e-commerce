@@ -12,6 +12,7 @@ function InstagramTag({ className = '' }) {
         />
       </svg>
       <span className="tt-ig-id">@timtomcollection</span>
+      <div className="tt-ig-id">www.timtom.in</div>
     </div>
   );
 }
