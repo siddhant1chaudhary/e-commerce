@@ -164,6 +164,8 @@ export default function AdminDashboard({ serverUser }) {
 									<th>Status</th>
 									<th>Canceled By</th>
 									<th>Total</th>
+									<th>Invoice</th>
+									<th>Package label</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
@@ -195,6 +197,30 @@ export default function AdminDashboard({ serverUser }) {
 												: order.canceledBy || 'N/A'}
 										</td>
 										<td>₹{order.total.toFixed(2)}</td>
+										<td className="text-nowrap">
+											<Link href={`/admin/orders/invoice/${order.id}`} legacyBehavior>
+												<a
+													className="btn btn-sm btn-outline-primary"
+													target="_blank"
+													rel="noopener noreferrer"
+													title="Open invoice (PDF or print)"
+												>
+													PDF
+												</a>
+											</Link>
+										</td>
+										<td className="text-nowrap">
+											<Link href={`/admin/orders/package-label/${order.id}`} legacyBehavior>
+												<a
+													className="btn btn-sm btn-outline-secondary"
+													target="_blank"
+													rel="noopener noreferrer"
+													title="Printable shipping label"
+												>
+													Label
+												</a>
+											</Link>
+										</td>
 										<td>
 											<select
 												className="form-select form-select-sm"
@@ -218,7 +244,7 @@ export default function AdminDashboard({ serverUser }) {
 								))}
 								{!orders?.length && (
 									<tr>
-										<td colSpan="6" className="text-center text-muted">No orders found</td>
+										<td colSpan="8" className="text-center text-muted">No orders found</td>
 									</tr>
 								)}
 							</tbody>

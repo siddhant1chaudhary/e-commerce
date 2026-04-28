@@ -1,0 +1,316 @@
+/* Admin order invoice (screen + print) */
+.admin-invoice-page {
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.admin-invoice-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+@media print {
+  .admin-invoice-toolbar,
+  .no-print {
+    display: none !important;
+  }
+  .admin-invoice-page {
+    padding: 0;
+    max-width: none;
+  }
+}
+
+.admin-invoice-sheet {
+  box-sizing: border-box;
+  background: #fff;
+  color: #111;
+  border: 1px solid #ccc;
+  padding: 1.25rem 1.5rem;
+}
+
+@media print {
+  .admin-invoice-sheet {
+    border: none;
+  }
+}
+
+.admin-invoice-brand {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #000;
+}
+
+.admin-invoice-brand-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #000;
+  margin: 0 0 0.2rem 0;
+}
+
+.admin-invoice-brand-site {
+  font-size: 0.85rem;
+  color: #333;
+  margin: 0;
+}
+
+.admin-invoice-sheet h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.admin-invoice-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.admin-invoice-block {
+  margin-bottom: 1rem;
+}
+
+.admin-invoice-block h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666;
+  margin: 0 0 0.35rem 0;
+}
+
+.admin-invoice-addr {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.admin-invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.admin-invoice-table th,
+.admin-invoice-table td {
+  border: 1px solid #ccc;
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-invoice-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.admin-invoice-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.admin-invoice-totals {
+  max-width: 16rem;
+  margin-left: auto;
+  font-size: 0.9rem;
+}
+
+.admin-invoice-totals tr td {
+  padding: 0.2rem 0;
+  border: none;
+}
+
+.admin-invoice-totals tr td:first-child {
+  text-align: right;
+  color: #555;
+}
+
+.admin-invoice-totals tr.grand td {
+  font-weight: 700;
+  font-size: 1rem;
+  border-top: 1px solid #000;
+  padding-top: 0.35rem;
+}
+
+/* Package label inner layout (uses .tt-label from printTags.css) */
+.opkg-label .opkg-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.1in 0.12in;
+  box-sizing: border-box;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.opkg-brand {
+  flex: 0 0 auto;
+  text-align: center;
+  border-bottom: 1px solid #000;
+  padding-bottom: 0.06in;
+  margin-bottom: 0.08in;
+}
+
+.opkg-brand-line {
+  display: block;
+  font-weight: 800;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.opkg-brand-sub {
+  display: block;
+  font-size: 7px;
+  margin-top: 0.02in;
+}
+
+.opkg-ship {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.04in;
+}
+
+.opkg-addr {
+  flex: 1 1 auto;
+  min-height: 0;
+  font-size: 8.5px;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.opkg-name {
+  font-weight: 700;
+  font-size: 9.5px;
+  margin-bottom: 0.05in;
+  word-break: break-word;
+}
+
+.opkg-text {
+  word-break: break-word;
+}
+
+.opkg-phone {
+  margin-top: 0.06in;
+  font-weight: 600;
+  font-size: 8.5px;
+}
+
+.opkg-order-row {
+  margin: 0.1in 0 0.06in 0;
+  text-align: center;
+}
+
+.opkg-mono {
+  font-size: 8.5px;
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+}
+
+.opkg-barcode-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0.5in;
+}
+
+.opkg-barcode {
+  max-width: 100%;
+  height: auto;
+}
+
+.opkg-meta {
+  margin-top: auto;
+  font-size: 7.5px;
+  line-height: 1.35;
+  text-align: center;
+  border-top: 1px solid #000;
+  padding-top: 0.08in;
+}
+
+.opkg-cod {
+  font-weight: 800;
+  font-size: 8.5px;
+  margin: 0.04in 0;
+}
+
+.opkg-pmt {
+  color: #222;
+}
+
+.admin-pkg-page {
+  padding: 1rem;
+}
+
+/* On-screen: true CSS 4×6 in (384×576 px at 96px/in), centered — not full viewport width. */
+.opkg-print-page .opkg-preview {
+  width: 4in;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+/* Prevent flex/grid ancestors from stretching the label wider than 4in */
+.opkg-print-page .opkg-label {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.admin-pkg-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.opkg-preview {
+  max-width: 100%;
+  overflow: auto;
+}
+
+@media print {
+  body.is-opkg-label-page header,
+  body.is-opkg-label-page .site-footer,
+  body.is-opkg-label-page .no-print,
+  body.is-opkg-label-page .admin-pkg-toolbar {
+    display: none !important;
+  }
+
+  .admin-pkg-page.opkg-print-page {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .opkg-preview {
+    width: 4in !important;
+    max-width: 4in !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  .opkg-label,
+  .opkg-label.tt-label {
+    width: 4in !important;
+    min-width: 4in !important;
+    max-width: 4in !important;
+    height: 6in !important;
+    min-height: 6in !important;
+    max-height: 6in !important;
+    box-sizing: border-box !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import '../styles/globals.scss';
 import '../styles/printTags.css';
+import '../styles/orderPrint.css';
 import ToastProvider from '../components/ToastProvider';
 import AuthProvider from '../components/AuthProvider';
 import Footer from '../components/Footer';
