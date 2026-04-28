@@ -8,6 +8,20 @@ export default class MyDocument extends Document {
       <Html>
         <Head>
           <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-8T2D9TS7V7"
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8T2D9TS7V7');
+              `.trim(),
+            }}
+          />
+          <script
             dangerouslySetInnerHTML={{
               __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
