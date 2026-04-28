@@ -310,12 +310,48 @@
 
 .tt-brand {
   font-weight: 700;
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.1;
   max-width: 70%;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Value text — same system as .tt-title-small: medium weight, one step up from the label */
+.tt-brand-small,
+.tt-title-small,
+.tt-sku-small,
+.tt-size-small,
+.tt-color-small,
+.tt-fabric-small,
+.tt-price-small {
+  font-weight: 500;
+  line-height: 1.1;
+  min-width: 0;
+}
+
+.tt-brand-small,
+.tt-sku-small,
+.tt-size-small,
+.tt-color-small,
+.tt-fabric-small {
+  font-size: 11px;
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+.tt-title-small {
+  font-size: 12px;
+  line-height: 1.15;
+  /* Parent .tt-title uses -webkit-line-clamp; allow wrap — do not force single line */
+  white-space: normal;
+  word-break: break-word;
 }
 
 .tt-badge {
@@ -328,7 +364,7 @@
 .tt-title {
   margin-top: 4px;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.15;
   display: -webkit-box;
   line-clamp: 2;
@@ -338,7 +374,6 @@
   min-height: 0;
   flex: 0 0 auto;
 }
-
 .tt-label.tt-compact:not(.tt-row) .tt-title {
   min-height: 0;
 }
@@ -356,6 +391,9 @@
 .tt-size,
 .tt-color,
 .tt-fabric {
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -363,15 +401,46 @@
 
 .tt-bottom {
   margin-top: 6px;
-  flex: 0 0 auto;
   min-height: 0;
   overflow: hidden;
 }
 
+/* Non-row label: fill under meta; DOM order stays price → code → Instagram → wash care. */
+.tt-label:not(.tt-row) .tt-bottom {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tt-label:not(.tt-row) .tt-bottom .tt-price {
+  flex: 0 0 auto;
+}
+
+/* Pinned footer: code + IG + wash. Use this wrapper so duplicate .tt-code / .tt-instagram / .tt-washcare above are not affected */
+.tt-label:not(.tt-row) .tt-bottom .tt-bottom-stack {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 100%;
+}
+
 .tt-price {
-  font-weight: 800;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 10px;
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tt-price-small {
+  font-size: 12px;
+  font-weight: 800;
+  display: inline;
 }
 
 .tt-code {
@@ -402,8 +471,8 @@
   overflow: hidden;
 }
 
-/* Instagram: icon + @handle (2×2 / 2×3 and larger labels) */
-.tt-bottom .tt-instagram {
+/* Instagram: icon + @handle — scoped to .tt-bottom-stack so a second .tt-instagram “above” isn’t double-styled */
+.tt-bottom-stack .tt-instagram {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -419,7 +488,7 @@
   color: #000;
 }
 
-.tt-bottom .tt-instagram .tt-ig-icon {
+.tt-bottom-stack .tt-instagram .tt-ig-icon {
   width: 11px;
   height: 11px;
   min-width: 10px;
@@ -431,7 +500,7 @@
   shape-rendering: geometricPrecision;
 }
 
-.tt-bottom .tt-instagram .tt-ig-id {
+.tt-bottom-stack .tt-instagram .tt-ig-id {
   font-size: 8px;
   font-weight: 600;
   line-height: 1.2;

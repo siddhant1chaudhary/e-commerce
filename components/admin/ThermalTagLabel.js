@@ -160,11 +160,11 @@ export default function ThermalTagLabel({
           <>
             <div className="tt-row-text">
               <div className="tt-row-head">
-                <span className="tt-brand">{brand}</span>
+                <span className="tt-brand mt-4">Brand:{brand}</span>
                 {template === 'sale' && <span className="tt-badge">SALE</span>}
               </div>
               <div className="tt-row-title" title={title}>
-                {title}
+                Product Name: {title}
               </div>
               {hasRowDetails ? <div className="tt-row-details">{detailBlock}</div> : null}
               <div
@@ -186,26 +186,28 @@ export default function ThermalTagLabel({
         ) : (
           <>
             <div className="tt-top">
-              <div className="tt-brand">{brand}</div>
+              <div className="tt-brand mt-4">Brand: <span className='tt-brand-small'>{brand}</span></div>
               {template === 'sale' && <div className="tt-badge">SALE</div>}
             </div>
             <div className="tt-title" title={title}>
-              {title}
+            Product: <span className='tt-title-small'>{title}</span>
             </div>
             <div className="tt-meta">
-              <div className="tt-sku">SKU: {sku || '—'}</div>
-              {variant?.size ? <div className="tt-size">Size: {variant.size}</div> : null}
-              {variant?.color ? <div className="tt-color">Color: {variant.color}</div> : null}
-              {fabric ? <div className="tt-fabric">Fabric: {fabric}</div> : null}
+              <div className="tt-sku">SKU: <span className='tt-sku-small'>{sku || '—'}</span></div>
+              {variant?.size ? <div className="tt-size">Size: <span className='tt-size-small'>{variant.size}</span></div> : null}
+              {variant?.color ? <div className="tt-color">Color: <span className='tt-color-small'>{variant.color}</span></div> : null}
+              {fabric ? <div className="tt-fabric">Fabric: <span className='tt-fabric-small'>{fabric}</span></div> : null}
             </div>
             <div className="tt-bottom">
-              <div className="tt-price">MRP ₹{Number.isFinite(mrp) ? mrp : 0}</div>
-              <div className={`tt-code${showBarcode && showQr ? ' tt-code--both' : ''}`}>
-                {showBarcode ? <svg ref={barcodeRef} className="tt-barcode" role="img" /> : null}
-                {showQr ? <canvas ref={qrRef} className="tt-qr" /> : null}
+              <div className="tt-price">MRP ₹ <span className='tt-price-small'>{Number.isFinite(mrp) ? mrp : 0}</span><span> (incl. of all taxes)</span> </div>
+              <div className="tt-bottom-stack">
+                <div className={`tt-code${showBarcode && showQr ? ' tt-code--both ' : ''}`}>
+                  {showQr ? <canvas ref={qrRef} className="tt-qr mb-2" /> : null}
+                  {showBarcode ? <svg ref={barcodeRef} className="tt-barcode" role="img" /> : null}
+                </div>
+                <InstagramTag className="tt-instagram" />
+                {washCareBlock}
               </div>
-              <InstagramTag className="tt-instagram" />
-              {washCareBlock}
             </div>
           </>
         )}
