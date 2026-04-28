@@ -53,8 +53,10 @@ export default async function handler(req, res) {
     // merge only when guestCart exists AND guestCart has no userId (true guest)
     if (guestCart && (!guestCart.userId || String(guestCart.userId) === String(userId))) {
       // merge guest items into userCart
-      guestCart.items.forEach(gItem => {
-        const idx = userCart.items.findIndex(i => i.productId === gItem.productId);
+      guestCart.items.forEach((gItem) => {
+        const idx = userCart.items.findIndex(
+          (i) => i.productId === gItem.productId && String(i.size || '') === String(gItem.size || '')
+        );
         if (idx === -1) userCart.items.push({ ...gItem });
         else userCart.items[idx].qty = (userCart.items[idx].qty || 0) + (gItem.qty || 0);
       });

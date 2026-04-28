@@ -11,6 +11,18 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : null;
 }
 
+/** Matches API: one cart line = productId + size (string). */
+function isSameCartLine(a, b) {
+  if (!a || !b) return false;
+  if (a.productId !== b.productId) return false;
+  return String(a.size ?? '') === String(b.size ?? '');
+}
+
+function cartLineKey(item) {
+  if (!item) return '';
+  return `${item.productId}::${String(item.size ?? '')}`;
+}
+
 export default function CartPage() {
   const { cart: ctxCart, refreshCart } = useAuth() || {};
   const toast = useToast();
@@ -71,25 +83,28 @@ export default function CartPage() {
     }
   }
 
-  function changeQty(productId, delta) {
+  function changeQty(line, delta) {
     if (!cart) return;
-    const items = cart.items.map(i => i.productId === productId ? { ...i, qty: Math.max(0, (Number(i.qty)||0) + delta) } : i)
-      .filter(i => i.qty > 0);
+    const items = cart.items
+      .map((i) => (isSameCartLine(i, line) ? { ...i, qty: Math.max(0, (Number(i.qty) || 0) + delta) } : i))
+      .filter((i) => i.qty > 0);
     setCart({ ...cart, items });
     saveCartItems(items);
   }
 
-  function setQty(productId, qty) {
+  function setQty(line, qty) {
     if (!cart) return;
-    const items = cart.items.map(i => i.productId === productId ? { ...i, qty: Math.max(0, Number(qty) || 0) } : i)
-      .filter(i => i.qty > 0);
+    const n = Math.max(0, Number(qty) || 0);
+    const items = cart.items
+      .map((i) => (isSameCartLine(i, line) ? { ...i, qty: n } : i))
+      .filter((i) => i.qty > 0);
     setCart({ ...cart, items });
     saveCartItems(items);
   }
 
-  function removeItem(productId) {
+  function removeItem(line) {
     if (!cart) return;
-    const items = cart.items.filter(i => i.productId !== productId);
+    const items = cart.items.filter((i) => !isSameCartLine(i, line));
     setCart({ ...cart, items });
     saveCartItems(items);
   }
@@ -129,8 +144,8 @@ export default function CartPage() {
         <div className="row">
           <div className="col-lg-8">
             <div className="list-group">
-              {cart.items.map(item => (
-                <div key={item.productId} className="list-group-item mb-3 p-3 bg-white border rounded d-flex align-items-start">
+              {cart.items.map((item) => (
+                <div key={cartLineKey(item)} className="list-group-item mb-3 p-3 bg-white border rounded d-flex align-items-start">
                   <img src={item.image || '/images/placeholder.png'} alt={item.title} style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 6 }} />
                   <div className="ms-3 flex-grow-1">
                     <div className="d-flex justify-content-between">
@@ -144,15 +159,15 @@ export default function CartPage() {
                       </div>
                       <div className="text-end">
                         <div className="mb-2">₹{(item.price * item.qty).toFixed(2)}</div>
-                        <button className="btn btn-sm btn-link text-danger" onClick={() => removeItem(item.productId)}>Remove</button>
+                        <button className="btn btn-sm btn-link text-danger" onClick={() => removeItem(item)}>Remove</button>
                       </div>
                     </div>
 
                     <div className="mt-3 d-flex align-items-center gap-2">
                       <div className="input-group input-group-sm" style={{ width: 130 }}>
-                        <button className="btn btn-outline-secondary" type="button" onClick={() => changeQty(item.productId, -1)} disabled={saving || item.qty <= 1}>−</button>
-                        <input className="form-control text-center" value={item.qty} onChange={(e) => setQty(item.productId, e.target.value)} />
-                        <button className="btn btn-outline-secondary" type="button" onClick={() => changeQty(item.productId, 1)} disabled={saving}>+</button>
+                        <button className="btn btn-outline-secondary" type="button" onClick={() => changeQty(item, -1)} disabled={saving || item.qty <= 1}>−</button>
+                        <input className="form-control text-center" value={item.qty} onChange={(e) => setQty(item, e.target.value)} />
+                        <button className="btn btn-outline-secondary" type="button" onClick={() => changeQty(item, 1)} disabled={saving}>+</button>
                       </div>
                       <div className="text-muted small">Qty</div>
                     </div>
