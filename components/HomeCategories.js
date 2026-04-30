@@ -23,7 +23,7 @@ export default function HomeCategories() {
       <div className="row g-3">
         {categories.map((c) => (
           <div key={c.id} className="col-6 col-sm-3">
-            <Link href={`/baby/all?age=${encodeURIComponent(c.ageQuery)}`} legacyBehavior>
+            <Link href={`/shop-by-age/${encodeURIComponent(c.ageQuery)}`} legacyBehavior>
               <a className="card rounded-circle category-card text-decoration-none text-dark " style={{ height: '12.2rem', width: '12.2rem' }}>
                 <img src={c.img} width="110px" height="110px" alt={c.title} className="card-img-top rounded-circle category-img" onError={(e) => { e.currentTarget.src = '/images/placeholder.png'; }} />
                 <div className="card-body py-2 text-center">

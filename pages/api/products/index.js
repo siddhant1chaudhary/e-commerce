@@ -1,5 +1,6 @@
 import { getProducts, upsertItem, normalizeProduct } from '../../../lib/store';
 import { verifyCsrf, parseCookies, verifyToken } from '../../../lib/auth';
+import { canonicalAgeFromProduct, canonicalizeShopByAge } from '../../../lib/ageGroups';
 
 export default async function handler(req, res) {
   try {
@@ -7,10 +8,17 @@ export default async function handler(req, res) {
       // read filters from query string
       const { category = '', subCategory = '', ageGroup = '' } = req.query || {};
       const products = await getProducts(); // already normalized in store
+      const ageCanonical = ageGroup ? canonicalizeShopByAge(ageGroup) : null;
       const filtered = (products || []).filter((p) => {
         if (category && p.category && String(p.category).toLowerCase() !== String(category).toLowerCase()) return false;
         if (subCategory && p.subCategory && String(p.subCategory).toLowerCase() !== String(subCategory).toLowerCase()) return false;
-        if (ageGroup && p.ageGroup && String(p.ageGroup).toLowerCase() !== String(ageGroup).toLowerCase()) return false;
+        if (ageGroup) {
+          if (ageCanonical) {
+            if (canonicalAgeFromProduct(p) !== ageCanonical) return false;
+          } else if (!p.ageGroup || String(p.ageGroup).toLowerCase() !== String(ageGroup).toLowerCase()) {
+            return false;
+          }
+        }
         return true;
       });
       res.status(200).json(filtered);
