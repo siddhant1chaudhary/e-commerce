@@ -121,9 +121,9 @@ export default function AdminOrderInvoice({ order, createdAtLabel }) {
                 <strong>Date:</strong> {createdAtLabel}
               </div>
             )}
-            <div>
+            {/* <div>
               <strong>Status:</strong> {order.status || '—'}
-            </div>
+            </div> */}
             {order.paymentMethod && (
               <div>
                 <strong>Payment:</strong> {order.paymentMethod}
