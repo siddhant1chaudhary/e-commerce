@@ -81,11 +81,16 @@ export default function AdminUsers({ serverUser }) {
     <div>
       <Header />
       <main className="container py-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <h1 className="h4 mb-0">All users</h1>
-          <Link href="/admin/dashboard" legacyBehavior>
-            <a className="btn btn-outline-secondary">Back to dashboard</a>
-          </Link>
+          <div className="d-flex flex-wrap gap-2">
+            <Link href="/admin/guest-visitors" legacyBehavior>
+              <a className="btn btn-outline-secondary">Guest visitors</a>
+            </Link>
+            <Link href="/admin/dashboard" legacyBehavior>
+              <a className="btn btn-outline-secondary">Back to dashboard</a>
+            </Link>
+          </div>
         </div>
 
         {error && (

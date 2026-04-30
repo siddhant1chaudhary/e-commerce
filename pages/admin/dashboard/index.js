@@ -129,6 +129,16 @@ export default function AdminDashboard({ serverUser }) {
 							</div>
 						</Link>
 					</div>
+
+					<div className="col-sm-6 col-md-3">
+						<Link href="/admin/guest-visitors" className="text-decoration-none text-reset d-block h-100">
+							<div className="card p-3 h-100 shadow-sm user-select-none" style={{ cursor: 'pointer' }} title="Anonymous storefront sessions">
+								<div className="small text-muted">Guest visitors</div>
+								<div className="h5 fw-bold text-body">Analytics</div>
+								<div className="small text-primary mt-1">Open →</div>
+							</div>
+						</Link>
+					</div>
 				</div>
 
 				<div className="card p-3 mb-4">

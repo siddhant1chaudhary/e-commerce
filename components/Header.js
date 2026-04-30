@@ -140,6 +140,11 @@ export default function Header({ navConfig }) {
                               <a className="dropdown-item">Print Tags</a>
                             </Link>
                           </li>
+                          <li>
+                            <Link href="/admin/guest-visitors" legacyBehavior>
+                              <a className="dropdown-item">Guest visitors</a>
+                            </Link>
+                          </li>
                           <li><hr className="dropdown-divider" /></li>
                         </>
                       )}
