@@ -76,8 +76,6 @@ export default async function handler(req, res) {
     const $setOnInsert = {
       visitorId,
       firstSeenAt: now,
-      totalActiveMs: 0,
-      pageViews: 0,
       referrer: clientReferrer || headerReferrer || null,
     };
 
