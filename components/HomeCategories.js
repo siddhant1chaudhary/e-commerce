@@ -17,9 +17,9 @@ export default function HomeCategories() {
       <div style={{color:"#ef806f"}} className="d-flex justify-content-center align-items-center mb-3">
         <h4 className="mb-0">Shop by Age</h4>
       </div>
-      <div style={{color:"#ef806f"}} className="d-flex justify-content-end align-items-center mb-3">
+      {/* <div style={{color:"#ef806f"}} className="d-flex justify-content-end align-items-center mb-3">
         <Link href="/" legacyBehavior><a className="small text-muted">View all</a></Link>
-      </div>
+      </div> */}
       <div className="row g-3">
         {categories.map((c) => (
           <div key={c.id} className="col-6 col-sm-3">

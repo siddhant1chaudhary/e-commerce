@@ -61,15 +61,19 @@ export default function Header({ navConfig }) {
                     onFocus={() => setOpen(cat.id)}
                     onBlur={() => setOpen(null)}
                   >
-                    <a
-                      className="nav-link dropdown-toggle"
-                      href="#"
-                      id={`${cat.id}Dropdown`}
-                      role="button"
-                      aria-expanded={isOpen ? 'true' : 'false'}
+                    <Link
+                      href={`/${encodeURIComponent((cat.subTitle || cat.id || '').toString())}/all`}
+                      legacyBehavior
                     >
-                      {cat.title}
-                    </a>
+                      <a
+                        className="nav-link dropdown-toggle"
+                        id={`${cat.id}Dropdown`}
+                        role="button"
+                        aria-expanded={isOpen ? 'true' : 'false'}
+                      >
+                        {cat.title}
+                      </a>
+                    </Link>
                     <ul className={`dropdown-menu${isOpen ? ' show' : ''}`} aria-labelledby={`${cat.id}Dropdown`}>
                       {renderDropdownItems(cat.items || [])}
                     </ul>

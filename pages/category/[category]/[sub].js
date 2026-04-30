@@ -67,7 +67,25 @@ export default function CategorySubPage() {
             <h1 className="h4 mb-0">{catObj?.title || 'Category'}</h1>
             {/* <div className="small text-muted">{catObj?.title ? `Browse ${catObj.title}` : ''}</div> */}
           </div>
-          <div className="d-flex gap-2">
+          {/* <div className="d-flex gap-2">
+            <Link href={`/${encodeURIComponent(catSlug)}/all`} legacyBehavior>
+              <a className={`btn btn-sm ${!subParam ? 'btn-primary' : 'btn-outline-secondary'}`}>All</a>
+            </Link>
+            {catObj?.items?.map((it) => {
+              const title = it.subTitle || it.label;
+              return (
+                <Link
+                  key={title}
+                  href={`/${encodeURIComponent(catSlug)}/${encodeURIComponent(title)}`}
+                  legacyBehavior
+                >
+                  <a className={`btn btn-sm ${subParam === title ? 'btn-primary' : 'btn-outline-secondary'}`}>{title}</a>
+                </Link>
+              );
+            })}
+          </div> */}
+        </div>
+        <div className="mb-3 d-flex gap-2 align-items-center">
             <Link href={`/${encodeURIComponent(catSlug)}/all`} legacyBehavior>
               <a className={`btn btn-sm ${!subParam ? 'btn-primary' : 'btn-outline-secondary'}`}>All</a>
             </Link>
@@ -84,9 +102,7 @@ export default function CategorySubPage() {
               );
             })}
           </div>
-        </div>
-
-        <div className="mb-3 d-flex gap-2 align-items-center">
+        {/* <div className="mb-3 d-flex gap-2 align-items-center">
           <label className="small mb-0 me-2">Shop by Age:</label>
           <Link href={`/${encodeURIComponent(catSlug)}/${subParam || 'all'}?age=`} legacyBehavior>
             <a className={`btn btn-sm btn-outline-secondary`}>All</a>
@@ -103,7 +119,7 @@ export default function CategorySubPage() {
           <Link href={`/${encodeURIComponent(catSlug)}/${subParam || 'all'}?age=Juniors`} legacyBehavior>
             <a className="btn btn-sm btn-outline-secondary">Juniors</a>
           </Link>
-        </div>
+        </div> */}
 
         <section>
           {error && <div className="alert alert-danger">Failed to load products.</div>}

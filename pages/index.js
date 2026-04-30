@@ -12,8 +12,8 @@ export default function Home() {
       <main className="container py-4">
         <BannerCarousel />
         <HomeCategories />
-        <FeaturedProducts title="Trending styles" />
-        <FeaturedProducts title="Best Sellers" />
+        <FeaturedProducts title="Trending styles" limit={4}  orderDirection="desc" />
+        <FeaturedProducts title="Best Sellers" limit={4}  orderDirection="asc" />
         {/* <section className="mb-5">
           <h5 className="mb-3">Popular Brands</h5>
           <div className="d-flex gap-3 overflow-auto py-2">
