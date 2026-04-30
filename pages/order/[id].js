@@ -1,6 +1,7 @@
 import Header from '../../components/Header';
 import { MongoClient } from 'mongodb';
 import { useState } from 'react';
+import { parseCookies, verifyToken } from '../../lib/auth';
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB;
@@ -145,6 +146,15 @@ export default function OrderPage({ order, user }) {
 
           <div className="mt-4">
             <a href="/" className="btn btn-primary">Continue shopping</a>
+            {(currentOrder.status === 'delivered' ||
+              currentOrder.status === 'return-requested' ||
+              currentOrder.status === 'return-in-progress' ||
+              currentOrder.status === 'return-shipped' ||
+              currentOrder.status === 'return-delivered') && (
+              <a href={`/order/invoice/${currentOrder.id}`} className="btn btn-outline-success ms-2">
+                Invoice
+              </a>
+            )}
             <button
               className="btn btn-outline-danger ms-2"
               onClick={handleRequestReturn}
@@ -184,7 +194,21 @@ export async function getServerSideProps({ params, req }) {
     const db = client.db(dbName);
     const ordersCollection = db.collection('orders');
 
-    // Fetch the order by id
+    const cookies = parseCookies(req);
+    const token = cookies['token'];
+    const payload = token ? verifyToken(token) : null;
+
+    if (!payload) {
+      await client.close();
+      return {
+        redirect: {
+          destination: '/auth/login',
+          permanent: false,
+        },
+      };
+    }
+
+    // Fetch the order by id and enforce ownership (or admin)
     order = await ordersCollection.findOne({ id });
 
     if (order) {
@@ -192,17 +216,19 @@ export async function getServerSideProps({ params, req }) {
       order._id = order._id.toString();
     }
 
-    // Fetch user details from token
-    const token = req.cookies['token'];
-
-    if (token) {
-      try {
-        const payload = verifyToken(token);
-        user = { id: payload.sub, name: payload.name || 'User' };
-      } catch (err) {
-        console.error('Token verification failed:', err);
-      }
+    if (!order) {
+      await client.close();
+      return { props: { order: null, user: null } };
     }
+
+    const isAdmin = payload.role === 'admin';
+    const isOwner = String(order.userId || '') === String(payload.sub || '');
+    if (!isAdmin && !isOwner) {
+      await client.close();
+      return { notFound: true };
+    }
+
+    user = { id: payload.sub, name: payload.name || 'User', role: payload.role || 'user' };
 
     await client.close();
   } catch (err) {

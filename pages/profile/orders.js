@@ -169,6 +169,16 @@ export default function MyOrders({ serverUser }) {
 								);
 							})()}
 
+							{(order.status === 'delivered' ||
+                order.status === 'return-requested' ||
+                order.status === 'return-in-progress' ||
+                order.status === 'return-shipped' ||
+                order.status === 'return-delivered') && (
+								<Link href={`/order/invoice/${order.id}`} legacyBehavior>
+									<a className="btn btn-sm btn-outline-success">Invoice</a>
+								</Link>
+							)}
+
 							<Link href={`/order/${order.id}`} legacyBehavior><a className="btn btn-sm btn-primary">View Details</a></Link>
                         </div>
                       </div>
