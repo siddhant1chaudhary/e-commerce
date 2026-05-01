@@ -6,7 +6,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -23,7 +22,6 @@ export function AppHeader({ navigation, breadcrumb }: Props) {
   const { user, cartCount, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [search, setSearch] = useState('');
 
   function goHref(href: string) {
     setMenuOpen(false);
@@ -46,61 +44,52 @@ export function AppHeader({ navigation, breadcrumb }: Props) {
   return (
     <View style={styles.wrap}>
       <View style={styles.topRow}>
-        <TouchableOpacity style={styles.brandRow} onPress={() => navigation.navigate('Home')}>
-          <Image
-            source={{ uri: marketingUri(MARKETING.logo) }}
-            style={styles.logoImg}
-            resizeMode="cover"
-            accessibilityLabel="TimTom logo"
-          />
-          <View style={styles.brandText}>
-            <Text style={styles.brandTim}>Tim</Text>
-            <Text style={styles.brandTom}>tom</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setMenuOpen(true)} style={styles.iconBtn}>
-          <Text style={styles.iconBtnText}>☰</Text>
-        </TouchableOpacity>
-
-        <View style={styles.searchWrap}>
-          <Text style={styles.searchIcon}>⌕</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for products, brands and more"
-            placeholderTextColor={colors.muted}
-            value={search}
-            onChangeText={setSearch}
-            editable={false}
-          />
+        <View style={styles.headerLeft}>
+          <TouchableOpacity onPress={() => setMenuOpen(true)} style={styles.iconBtn}>
+            <Text style={styles.iconBtnText}>☰</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.brandRow} onPress={() => navigation.navigate('Home')}>
+            <Image
+              source={{ uri: marketingUri(MARKETING.logo) }}
+              style={styles.logoImg}
+              resizeMode="cover"
+              accessibilityLabel="TimTom logo"
+            />
+            <View style={styles.brandText}>
+              <Text style={styles.brandTim}>Tim</Text>
+              <Text style={styles.brandTom}>tom</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.cartBtn} onPress={() => navigation.navigate('Cart')}>
-          <Text style={styles.cartGlyph}>🛒</Text>
-          <Text style={styles.cartLabel}>Cart</Text>
-          {cartCount > 0 ? (
-            <View style={styles.badge}>
-              <Text style={styles.badgeTxt}>{cartCount > 99 ? '99+' : cartCount}</Text>
-            </View>
-          ) : null}
-        </TouchableOpacity>
-
-        {!user ? (
-          <View style={styles.authBtns}>
-            <TouchableOpacity style={styles.outlineBtn} onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.outlineBtnTxt}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.fillBtn} onPress={() => navigation.navigate('Signup')}>
-              <Text style={styles.fillBtnTxt}>Sign up</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity style={styles.userBtn} onPress={() => setUserOpen(true)}>
-            <Text style={styles.userBtnTxt} numberOfLines={1}>
-              Hi, {user.name || 'User'}
-            </Text>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.cartBtn} onPress={() => navigation.navigate('Cart')}>
+            <Text style={styles.cartGlyph}>🛒</Text>
+            <Text style={styles.cartLabel}>Cart</Text>
+            {cartCount > 0 ? (
+              <View style={styles.badge}>
+                <Text style={styles.badgeTxt}>{cartCount > 99 ? '99+' : cartCount}</Text>
+              </View>
+            ) : null}
           </TouchableOpacity>
-        )}
+
+          {!user ? (
+            <View style={styles.authBtns}>
+              <TouchableOpacity style={styles.outlineBtn} onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.outlineBtnTxt}>Login</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.fillBtn} onPress={() => navigation.navigate('Signup')}>
+                <Text style={styles.fillBtnTxt}>Sign up</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.userBtn} onPress={() => setUserOpen(true)}>
+              <Text style={styles.userBtnTxt} numberOfLines={1}>
+                Hi, {user.name || 'User'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {breadcrumb ? (
@@ -108,7 +97,6 @@ export function AppHeader({ navigation, breadcrumb }: Props) {
           {breadcrumb}
         </Text>
       ) : null}
-
       <Modal visible={menuOpen} animationType="slide" transparent>
         <Pressable style={styles.modalBackdrop} onPress={() => setMenuOpen(false)} />
         <View style={styles.menuSheet}>
@@ -182,7 +170,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
-  topRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
+  topRow: { flexDirection: 'row', alignItems: 'center', width: '100%' },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', flexGrow: 1, flexShrink: 1, minWidth: 0, gap: 4 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 0 },
   brandRow: { flexDirection: 'row', alignItems: 'center' },
   logoImg: {
     width: 38,
