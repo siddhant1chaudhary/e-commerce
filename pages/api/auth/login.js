@@ -46,5 +46,9 @@ export default async function handler(req, res) {
 
 	// return public user fields (no password)
 	const { password: _p, ...publicUser } = updatedUser;
+	const body = req.body || {};
+	if (body.returnTokens === true) {
+		return res.status(200).json({ ...publicUser, token, csrf });
+	}
 	res.status(200).json(publicUser);
 }

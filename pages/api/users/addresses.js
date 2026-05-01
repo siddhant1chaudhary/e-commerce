@@ -1,4 +1,4 @@
-import { parseCookies, verifyToken } from '../../../lib/auth';
+import { verifyToken, getTokenFromRequest } from '../../../lib/auth';
 import { collectionFor } from '../../../lib/store';
 
 function genId() {
@@ -7,8 +7,7 @@ function genId() {
 
 export default async function handler(req, res) {
   try {
-    const cookies = parseCookies(req);
-    const token = cookies['token'];
+    const token = getTokenFromRequest(req);
     const payload = token ? verifyToken(token) : null;
     if (!payload) return res.status(401).json({ error: 'Unauthorized' });
     const userId = String(payload.sub);

@@ -1,7 +1,10 @@
 import React from 'react';
-import banner1 from '../utils/images/banner1.png';
-import banner2 from '../utils/images/banner2.jpg';
-import banner3 from '../utils/images/banner3.jpg';
+
+const BANNERS = [
+  { src: '/marketing/banner1.png', alt: 'banner1' },
+  { src: '/marketing/banner2.jpg', alt: 'banner2' },
+  { src: '/marketing/banner3.jpg', alt: 'banner3' },
+];
 
 export default function BannerCarousel() {
   return (
@@ -12,15 +15,11 @@ export default function BannerCarousel() {
         <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
       </div>
       <div className="carousel-inner">
-        <div className="carousel-item active">
-          <img src={banner1?.src || banner1} className="d-block w-100 carousel-hero" alt="banner1" />
-        </div>
-        <div className="carousel-item">
-          <img src={banner2?.src || banner2} className="d-block w-100 carousel-hero" alt="banner2"  />
-        </div>
-        <div className="carousel-item">
-          <img src={banner3?.src || banner3} className="d-block w-100 carousel-hero" alt="banner3" />
-        </div>
+        {BANNERS.map((b, i) => (
+          <div key={b.src} className={`carousel-item${i === 0 ? ' active' : ''}`}>
+            <img src={b.src} className="d-block w-100 carousel-hero" alt={b.alt} />
+          </div>
+        ))}
       </div>
       <button className="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
         <span className="carousel-control-prev-icon" aria-hidden="true"></span>

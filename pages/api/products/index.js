@@ -1,5 +1,5 @@
 import { getProducts, upsertItem, normalizeProduct } from '../../../lib/store';
-import { verifyCsrf, parseCookies, verifyToken } from '../../../lib/auth';
+import { verifyToken, csrfOrBearerOk, getTokenFromRequest } from '../../../lib/auth';
 import { canonicalAgeFromProduct, canonicalizeShopByAge } from '../../../lib/ageGroups';
 
 export default async function handler(req, res) {
@@ -27,12 +27,11 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
       // require CSRF and admin user for product creation
-      if (!verifyCsrf(req)) {
+      if (!csrfOrBearerOk(req)) {
         res.status(403).json({ error: 'Invalid CSRF' });
         return;
       }
-      const cookies = parseCookies(req);
-      const token = cookies['token'];
+      const token = getTokenFromRequest(req);
       const payload = token ? verifyToken(token) : null;
       if (!payload || payload.role !== 'admin') {
         res.status(403).json({ error: 'Forbidden' });

@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { verifyCsrf, parseCookies, verifyToken } from '../../../lib/auth';
+import { verifyToken, csrfOrBearerOk, getTokenFromRequest } from '../../../lib/auth';
 import { normalizeProduct } from '../../../lib/store';
 
 const uri = process.env.MONGODB_URI;
@@ -27,13 +27,12 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PUT' || req.method === 'DELETE') {
-      if (!verifyCsrf(req)) {
+      if (!csrfOrBearerOk(req)) {
         res.status(403).json({ error: 'Invalid CSRF' });
         return;
       }
 
-      const cookies = parseCookies(req);
-      const token = cookies['token'];
+      const token = getTokenFromRequest(req);
       const payload = token ? verifyToken(token) : null;
       if (!payload || payload.role !== 'admin') {
         res.status(403).json({ error: 'Forbidden' });

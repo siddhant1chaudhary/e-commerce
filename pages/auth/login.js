@@ -43,7 +43,7 @@ export default function Login() {
           <div className="card shadow-sm">
             {/* Banner area */}
             <div style={{ background: 'linear-gradient(90deg,#ffefef,#fff4ee)', padding: 0 }}>
-              <img src="/images/login-banner.jpg" alt="banner" style={{ width: '100%', display: 'block', objectFit: 'cover', height: 160 }} onError={(e)=>{e.currentTarget.style.display='none'}} />
+              <img src="/marketing/login-banner.jpg" alt="banner" style={{ width: '100%', display: 'block', objectFit: 'cover', height: 160 }} onError={(e)=>{e.currentTarget.style.display='none'}} />
             </div>
 
             <div className="card-body p-5">

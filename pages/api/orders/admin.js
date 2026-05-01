@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { parseCookies, verifyToken } from '../../../lib/auth';
+import { verifyToken, getTokenFromRequest } from '../../../lib/auth';
 import { sendOrderCanceledEmails, resolveOrderCustomerEmail } from '../../../lib/sendOrderEmails';
 
 const uri = process.env.MONGODB_URI;
@@ -7,8 +7,7 @@ const dbName = process.env.MONGODB_DB;
 const client = new MongoClient(uri);
 
 export default async function handler(req, res) {
-  const cookies = parseCookies(req);
-  const token = cookies['token'];
+  const token = getTokenFromRequest(req);
   const payload = token ? verifyToken(token) : null;
 
   if (!payload || payload.role !== 'admin') {

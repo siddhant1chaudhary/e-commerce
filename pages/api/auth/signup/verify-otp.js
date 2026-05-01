@@ -68,6 +68,9 @@ export default async function handler(req, res) {
 		setAuthCookies(res, token, csrf);
 
 		const { password: _p, ...publicUser } = userDoc;
+		if (req.body?.returnTokens === true) {
+			return res.status(200).json({ ...publicUser, token, csrf });
+		}
 		return res.status(200).json(publicUser);
 	} catch (err) {
 		console.error('Verify OTP API error:', err);

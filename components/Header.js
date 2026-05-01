@@ -3,7 +3,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from './AuthProvider';
 import Breadcrumbs from './Breadcrumbs';
 import Image from 'next/image';
-import logo from '../utils/images/logo.png'; // Adjust the path as necessary
 import styles from '../styles/Header.module.css';
 import navHeader from '../data/navHeader.json'; // <-- import JSON
 import { useState } from 'react'; // added
@@ -35,7 +34,7 @@ export default function Header({ navConfig }) {
           <Link href="/" legacyBehavior>
             <a className="navbar-brand d-flex align-items-center">
               {/* simple text logo; replace with image if available */}
-              <Image src={logo} alt="Logo" style={{ height: 38, marginRight: 10,width:38,borderRadius:'50px' }} onError={(e)=>{e.currentTarget.style.display='none'}} />
+              <Image src="/marketing/logo.png" alt="Logo" width={38} height={38} style={{ height: 38, marginRight: 10, width: 38, borderRadius: '50px' }} onError={(e)=>{e.currentTarget.style.display='none'}} />
               <h3 className={styles.brand}>
                 <span className={styles.brandTim}>Tim</span>
                 <span className={styles.brandTom}>tom</span>

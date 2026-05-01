@@ -1,5 +1,6 @@
 import { collectionFor } from '../../../lib/store';
-import { parseCookies, verifyToken } from '../../../lib/auth';
+import { verifyToken, getTokenFromRequest } from '../../../lib/auth';
+import { getCartIdFromRequest } from '../../../lib/requestMobile';
 import crypto from 'crypto';
 
 async function readCarts() {
@@ -25,11 +26,10 @@ function setCartCookie(res, cartId) {
 }
 
 export default async function handler(req, res) {
-  const cookies = parseCookies(req);
-  const token = cookies['token'];
+  const token = getTokenFromRequest(req);
   const payload = token ? verifyToken(token) : null;
   const userId = payload ? String(payload.sub) : null;
-  const cartIdCookie = cookies['cartId'] || null;
+  const cartIdCookie = getCartIdFromRequest(req);
 
   let carts = await readCarts();
 

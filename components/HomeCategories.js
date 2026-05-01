@@ -1,14 +1,10 @@
 import Link from 'next/link';
-import newBornImg from '../utils/images/newborn.png';
-import infantsImg from '../utils/images/Infants.png';
-import toddlerImg from '../utils/images/Toddler.png';
-import juniorsImg from '../utils/images/juniors.png';
 
 const categories = [
-  { id: 'newborn', title: 'New born', img: newBornImg?.src || newBornImg, age: '0-6 Months', ageQuery: 'Newborn' },
-  { id: 'infants', title: 'Infants', img: infantsImg?.src || infantsImg, age: '6-24 Months', ageQuery: 'Infants' },
-  { id: 'toddler', title: 'Toddler', img: toddlerImg?.src || toddlerImg, age: '2-7 Years', ageQuery: 'Toddlers' },
-  { id: 'juniors', title: 'Juniors', img: juniorsImg?.src || juniorsImg, age: '7-10 Years', ageQuery: 'Juniors' },
+  { id: 'newborn', title: 'New born', img: '/marketing/newborn.png', age: '0-6 Months', ageQuery: 'Newborn' },
+  { id: 'infants', title: 'Infants', img: '/marketing/infants.png', age: '6-24 Months', ageQuery: 'Infants' },
+  { id: 'toddler', title: 'Toddler', img: '/marketing/toddler.png', age: '2-7 Years', ageQuery: 'Toddlers' },
+  { id: 'juniors', title: 'Juniors', img: '/marketing/juniors.png', age: '7-10 Years', ageQuery: 'Juniors' },
 ];
 
 export default function HomeCategories() {

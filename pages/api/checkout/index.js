@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
-import { parseCookies, verifyToken, verifyCsrf } from '../../../lib/auth';
+import { verifyToken, csrfOrBearerOk, getTokenFromRequest } from '../../../lib/auth';
+import { getCartIdFromRequest } from '../../../lib/requestMobile';
 import { sendOrderNotificationEmails } from '../../../lib/sendOrderEmails';
 
 const uri = process.env.MONGODB_URI;
@@ -16,14 +17,13 @@ export default async function handler(req, res) {
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  const cookies = parseCookies(req);
-  const token = cookies['token'];
+  const token = getTokenFromRequest(req);
   const payload = token ? verifyToken(token) : null;
   const userId = payload?.sub || null;
   const isAuthed = !!payload;
 
-  // CSRF required for authenticated users
-  if (isAuthed && !verifyCsrf(req)) {
+  // CSRF (browser) or Bearer JWT (Expo) for authenticated checkout
+  if (isAuthed && !csrfOrBearerOk(req)) {
     return res.status(403).json({ error: 'Invalid CSRF' });
   }
 
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     const ordersCollection = db.collection('orders');
     const couponsCollection = db.collection('coupons');
 
-    const cartId = cookies['cartId'] || null;
+    const cartId = getCartIdFromRequest(req);
     let cart = null;
     if (userId) cart = await cartsCollection.findOne({ userId });
     if (!cart && cartId) cart = await cartsCollection.findOne({ id: cartId });

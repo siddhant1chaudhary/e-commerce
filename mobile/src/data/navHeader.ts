@@ -1,0 +1,63 @@
+export type NavItem = { label: string; href: string; className?: string };
+export type NavCategory = { id: string; title: string; subTitle: string; items: NavItem[] };
+
+export const navHeader: NavCategory[] = [
+  {
+    id: 'baby',
+    title: 'BABY',
+    subTitle: 'baby',
+    items: [
+      { label: 'Newborn', href: '/baby/newborn' },
+      { label: 'Sets', href: '/baby/sets' },
+      { label: 'Winter Wears', href: '/baby/winterwears' },
+    ],
+  },
+  {
+    id: 'boy',
+    title: 'BOY',
+    subTitle: 'boy',
+    items: [
+      { label: 'Onesies', href: '/boy/onesies' },
+      { label: 'T-shirts', href: '/boy/t-shirts' },
+      { label: 'Bottom', href: '/boy/bottom' },
+      { label: 'Sets', href: '/boy/sets' },
+      { label: 'Winter wears', href: '/boy/winterwears' },
+    ],
+  },
+  {
+    id: 'girl',
+    title: 'GIRL',
+    subTitle: 'girl',
+    items: [
+      { label: 'Dresses', href: '/girl/dresses' },
+      { label: 'Sets', href: '/girl/sets' },
+      { label: 'Tops', href: '/girl/tops' },
+      { label: 'Bottom', href: '/girl/bottom' },
+      { label: 'Winter wears', href: '/girl/winterwears' },
+    ],
+  },
+  {
+    id: 'accessories',
+    title: 'ACCESSORIES',
+    subTitle: 'accessories',
+    items: [
+      { label: 'Hats & Caps', href: '/accessories/hats' },
+      { label: 'Hairs', href: '/accessories/hairs' },
+      { label: 'Footwear', href: '/accessories/footwear' },
+      { label: 'Socks & Mittens', href: '/accessories/socks' },
+      { label: 'Bags', href: '/accessories/bags' },
+      { label: 'Toys', href: '/accessories/toys' },
+      { label: 'Jewellery', href: '/accessories/jewellery' },
+    ],
+  },
+  {
+    id: 'collection',
+    title: 'GIFTS COLLECTION',
+    subTitle: 'gift-collection',
+    items: [
+      { label: 'Girls', href: '/gift-collection/girls' },
+      { label: 'Boys', href: '/gift-collection/boys' },
+      { label: 'Newborn', href: '/gift-collection/newborn' },
+    ],
+  },
+];

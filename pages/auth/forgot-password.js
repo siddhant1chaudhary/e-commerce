@@ -69,7 +69,7 @@ export default function ForgotPassword() {
 					<div className="card shadow-sm">
 						<div style={{ background: 'linear-gradient(90deg,#ffefef,#fff4ee)', padding: 0 }}>
 							<img
-								src="/images/login-banner.jpg"
+								src="/marketing/login-banner.jpg"
 								alt="banner"
 								style={{ width: '100%', display: 'block', objectFit: 'cover', height: 160 }}
 								onError={(e) => {
