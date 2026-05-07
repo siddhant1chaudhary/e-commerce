@@ -132,8 +132,8 @@ export default function CheckoutPage() {
     }
   }
 
-  // updated: save payload and go to payment page
-  function proceedToPayment() {
+  // Save payload to sessionStorage and go to payment; for logged-in manual addresses, persist like profile.js
+  async function proceedToPayment() {
     if (!localCart || !localCart.items || localCart.items.length === 0) {
       toast?.show({ type: 'error', message: 'Cart is empty' }); return;
     }
@@ -161,11 +161,38 @@ export default function CheckoutPage() {
     }
     finalShipping = { ...finalShipping, email: em };
 
+    const nameTrim = String(finalShipping.name || '').trim();
+    const phoneTrim = String(finalShipping.phone || '').trim();
+    const addressTrim = String(finalShipping.address || '').trim();
+
+    setLoading(true);
+    try {
+      // Same as pages/profile.js saveNewAddress — POST when user typed a new address (not a saved selection)
+      if (user && !selectedAddressId) {
+        const res = await fetch('/api/users/addresses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ name: nameTrim, phone: phoneTrim, address: addressTrim }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to save address');
+        }
+        toast?.show({ type: 'success', message: 'Address saved' });
+      }
+    } catch (e) {
+      toast?.show({ type: 'error', message: e.message || 'Failed to save address' });
+      return;
+    } finally {
+      setLoading(false);
+    }
+
     // Save checkout payload to sessionStorage so payment page can access it
     try {
       if (typeof window !== 'undefined') {
         const payload = {
-          shipping: finalShipping,
+          shipping: { ...finalShipping, name: nameTrim, phone: phoneTrim, address: addressTrim },
           couponCode: couponResult?.coupon?.code || couponCode || null,
           subtotal,
           discount,
