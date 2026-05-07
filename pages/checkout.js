@@ -227,14 +227,15 @@ export default function CheckoutPage() {
               </div>
               <div className="mb-2">
                 <label className="form-label small">Email</label>
-                <input
+                <label className="form-control text-muted">{shipping.email}</label>
+                {/* <input
                   className="form-control"
                   type="email"
                   autoComplete="email"
                   placeholder={user ? 'For order confirmation' : 'Required for order confirmation'}
                   value={shipping.email}
                   onChange={(e) => setShipping({ ...shipping, email: e.target.value })}
-                />
+                /> */}
               </div>
               <div className="mb-2">
                 <label className="form-label small">Address</label>
