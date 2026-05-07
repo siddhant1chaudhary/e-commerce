@@ -9,10 +9,24 @@ import { useState, useMemo, useEffect } from 'react'; // added useEffect
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
 
-export default function ProductPage() {
+function absolutifyUrl(maybeRelativeUrl, baseUrl) {
+  if (!maybeRelativeUrl) return null;
+  try {
+    // already absolute
+    if (/^https?:\/\//i.test(maybeRelativeUrl)) return maybeRelativeUrl;
+    // relative (e.g. /images/x.png)
+    return new URL(maybeRelativeUrl, baseUrl).toString();
+  } catch {
+    return null;
+  }
+}
+
+export default function ProductPage({ initialProduct = null, canonicalUrl = null, baseUrl = null }) {
   const router = useRouter();
   const { id } = router.query;
-  const { data: product } = useSWR(() => (id ? `/api/products/${id}` : null), fetcher);
+  const { data: product } = useSWR(() => (id ? `/api/products/${id}` : null), fetcher, {
+    fallbackData: initialProduct || undefined
+  });
   const { user, addToCart } = useAuth() || {};
   const toast = useToast();
   const [loading, setLoading] = useState(false);
@@ -124,10 +138,33 @@ console.log('Selected Size:', selectedSize);
   // use 'from' query (set by ProductList links) to return to the previous listing.
   const from = typeof router.query.from === 'string' && router.query.from ? router.query.from : null;
 
+  const resolvedBaseUrl = baseUrl || (typeof window !== 'undefined' ? window.location.origin : '');
+  const resolvedCanonicalUrl = canonicalUrl || (typeof window !== 'undefined' ? window.location.href : '');
+  const ogTitle = product?.title ? `${product.title}${product.brand ? ` | ${product.brand}` : ''}` : 'Product';
+  const ogDescription =
+    (product?.description && String(product.description).trim()) ||
+    (product?.shortDescription && String(product.shortDescription).trim()) ||
+    'View product details.';
+  const ogImage = absolutifyUrl(product?.mainImage || gallery?.[0] || product?.image, resolvedBaseUrl) || null;
+
   return (
     <>
       <Head>
-        <title>{/* ...existing title code ... */}</title>
+        <title>{ogTitle}</title>
+        {resolvedCanonicalUrl ? <link rel="canonical" href={resolvedCanonicalUrl} /> : null}
+
+        {/* Open Graph (WhatsApp/FB) */}
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={ogDescription} />
+        {resolvedCanonicalUrl ? <meta property="og:url" content={resolvedCanonicalUrl} /> : null}
+        {ogImage ? <meta property="og:image" content={ogImage} /> : null}
+
+        {/* Twitter */}
+        <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+        <meta name="twitter:title" content={ogTitle} />
+        <meta name="twitter:description" content={ogDescription} />
+        {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
       </Head>
 
       <Header />
@@ -270,4 +307,34 @@ console.log('Selected Size:', selectedSize);
 
     </>
   );
+}
+
+export async function getServerSideProps(ctx) {
+  const { id } = ctx.params || {};
+  const req = ctx.req;
+
+  const proto = (req?.headers?.['x-forwarded-proto'] || 'http').toString().split(',')[0].trim();
+  const host = (req?.headers?.['x-forwarded-host'] || req?.headers?.host || '').toString().split(',')[0].trim();
+  const baseUrl = host ? `${proto}://${host}` : '';
+  const canonicalUrl = baseUrl ? `${baseUrl}${ctx.resolvedUrl || `/product/${id}`}` : '';
+
+  let initialProduct = null;
+  if (baseUrl && id) {
+    try {
+      const r = await fetch(`${baseUrl}/api/products/${encodeURIComponent(id)}`, {
+        headers: { accept: 'application/json' }
+      });
+      if (r.ok) initialProduct = await r.json();
+    } catch {
+      // ignore; page will fall back to client fetch
+    }
+  }
+
+  return {
+    props: {
+      initialProduct,
+      canonicalUrl,
+      baseUrl
+    }
+  };
 }
